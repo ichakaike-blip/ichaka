@@ -1,4 +1,5 @@
-import { auth, signOut } from "@/lib/auth";
+import { auth, isAdminEmail, signOut } from "@/lib/auth";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -7,11 +8,20 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const headerStore = await headers();
+  const pathname = headerStore.get("x-pathname");
+
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
+
   const session = await auth();
 
-  if (!session?.user?.email) {
+  if (!isAdminEmail(session?.user?.email)) {
     redirect("/admin/login");
   }
+
+  const adminEmail = session?.user?.email ?? "";
 
   return (
     <div className="min-h-screen bg-dark flex">
@@ -31,7 +41,7 @@ export default async function AdminLayout({
         <div className="border-t border-white/10 p-4 mt-8">
           <p className="text-xs text-white/50 mb-3">
             Signed in as: <br />
-            <span className="text-white/70">{session.user.email}</span>
+            <span className="text-white/70">{adminEmail}</span>
           </p>
           <form
             action={async () => {
