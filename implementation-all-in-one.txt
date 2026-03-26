@@ -1,0 +1,2055 @@
+﻿# ICHAKA FULL IMPLEMENTATION BUNDLE
+# Generated: 2026-03-26T16:52:30
+
+
+
+==================== FILE: package.json ====================
+
+{
+  "name": "ichaka-site",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@prisma/client": "^6.8.2",
+    "@auth/prisma-adapter": "^2.11.1",
+    "@portabletext/react": "^6.0.3",
+    "@sanity/image-url": "^2.0.3",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^1.7.0",
+    "marked": "^17.0.5",
+    "next": "^16.2.1",
+    "next-auth": "^5.0.0-beta.25",
+    "next-sanity": "^12.1.6",
+    "next-themes": "^0.4.6",
+    "nodemailer": "^7.0.7",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.4.27",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.1",
+    "postcss": "^8.5.8",
+    "prisma": "^6.8.2",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.9.3"
+  }
+}
+
+
+==================== FILE: .env.example ====================
+
+DATABASE_URL="file:./dev.db"
+NEXTAUTH_SECRET=""
+NEXTAUTH_URL="http://localhost:3000"
+EMAIL_FROM="admin@ichaka.com.ng"
+ADMIN_EMAIL=""
+
+
+==================== FILE: .env.local ====================
+
+DATABASE_URL="file:./dev.db"
+NEXTAUTH_SECRET="your-secret-key-change-this-in-production"
+NEXTAUTH_URL="http://localhost:3000"
+EMAIL_FROM="admin@ichaka.com.ng"
+ADMIN_EMAIL=""
+
+
+==================== FILE: prisma/schema.prisma ====================
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String    @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  excerpt     String?
+  content     String
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+  @@map("blog_posts")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  imageUrl    String?
+  link        String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@map("projects")
+}
+
+
+==================== FILE: src/lib/prisma.ts ====================
+
+import { PrismaClient } from "@prisma/client";
+
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
+
+export const prisma = globalForPrisma.prisma || new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+
+==================== FILE: src/lib/auth.ts ====================
+
+import NextAuth from "next-auth";
+import Email from "next-auth/providers/email";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import nodemailer from "nodemailer";
+import { prisma } from "./prisma";
+
+export function isAdminEmail(email?: string | null) {
+  if (!email) {
+    return false;
+  }
+
+  const configured = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  if (!configured) {
+    return true;
+  }
+
+  return email.toLowerCase() === configured;
+}
+
+export const { auth, handlers, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
+  providers: [
+    Email({
+      server: {
+        host: process.env.SMTP_HOST || "localhost",
+        port: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 1025,
+        auth:
+          process.env.SMTP_USER && process.env.SMTP_PASSWORD
+            ? {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASSWORD,
+              }
+            : undefined,
+      },
+      from: process.env.EMAIL_FROM || "admin@ichaka.com.ng",
+      async sendVerificationRequest({ identifier, url, provider }) {
+        if (process.env.NODE_ENV === "development") {
+          console.log(`\nMagic link for ${identifier}:\n${url}\n`);
+          return;
+        }
+
+        const transport = nodemailer.createTransport(provider.server);
+        await transport.sendMail({
+          to: identifier,
+          from: provider.from,
+          subject: "Sign in to ichaka admin",
+          text: `Sign in using this link: ${url}`,
+          html: `<p>Sign in using this link:</p><p><a href="${url}">${url}</a></p>`,
+        });
+      },
+    }),
+  ],
+  pages: {
+    signIn: "/admin/login",
+    error: "/admin/login",
+  },
+});
+
+
+==================== FILE: src/middleware.ts ====================
+
+import { auth, isAdminEmail } from "@/lib/auth";
+
+export default auth((req) => {
+  const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
+
+  if (isAdminRoute && !isAdminEmail(req.auth?.user?.email)) {
+    const newUrl = new URL("/admin/login", req.nextUrl.origin);
+    return Response.redirect(newUrl);
+  }
+});
+
+export const config = {
+  matcher: ["/admin/:path*"],
+};
+
+
+==================== FILE: src/components/reveal.tsx ====================
+
+"use client";
+
+import { motion } from "framer-motion";
+
+export function Reveal({
+  children,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.45, ease: "easeOut", delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+
+==================== FILE: src/components/navbar.tsx ====================
+
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { MobileNav } from "@/components/mobile-nav";
+
+const navItems = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/skills/content", label: "Content" },
+  { href: "/skills/development", label: "Development" },
+  { href: "/blog", label: "Blog" },
+  { href: "/projects", label: "Projects" },
+  { href: "/contact", label: "Contact" },
+];
+
+export function Navbar() {
+  const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-black/10 bg-[rgb(var(--bg),0.75)] backdrop-blur-xl dark:border-white/10">
+      <nav className="container-shell flex items-center justify-between py-3">
+        <Link href="/" className="group relative flex flex-col leading-none">
+          <span className="mono text-[10px] uppercase tracking-[0.22em] muted">Vol. 1 / 2026</span>
+          <span className="mt-1 text-lg font-semibold tracking-tight">ichaka</span>
+          <span className="absolute -bottom-1 left-0 h-px w-0 bg-cyan-400 transition-all duration-300 group-hover:w-full" />
+        </Link>
+
+        <ul className="hidden items-center gap-1 md:flex">
+          {navItems.map((item) => {
+            const active = pathname === item.href;
+            return (
+              <li key={item.href} className="relative">
+                <Link
+                  href={item.href}
+                  className={`mono relative rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.16em] transition ${
+                    active ? "text-current" : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                  }`}
+                >
+                  {item.label}
+                  <AnimatePresence>
+                    {active ? (
+                      <motion.span
+                        layoutId="active-pill"
+                        className="absolute inset-0 -z-10 rounded-full bg-black/10 dark:bg-white/10"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    ) : null}
+                  </AnimatePresence>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="flex items-center gap-2">
+          <button
+            aria-label="Toggle theme"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="rounded-full border border-black/10 bg-white/75 p-2 text-zinc-800 hover:bg-white dark:border-white/10 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+          >
+            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+
+          <MobileNav items={navItems} />
+        </div>
+      </nav>
+    </header>
+  );
+}
+
+
+==================== FILE: src/components/admin/PostForm.tsx ====================
+
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+interface PostFormProps {
+  initialData?: {
+    id: string;
+    title: string;
+    slug: string;
+    excerpt?: string;
+    content: string;
+  };
+}
+
+export default function PostForm({ initialData }: PostFormProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
+
+  const [formData, setFormData] = useState({
+    title: initialData?.title || "",
+    slug: initialData?.slug || "",
+    excerpt: initialData?.excerpt || "",
+    content: initialData?.content || "",
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Auto-generate slug from title if creating new post
+    if (name === "title" && !initialData) {
+      const generatedSlug = value
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-");
+      setFormData((prev) => ({ ...prev, slug: generatedSlug }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const method = initialData ? "PATCH" : "POST";
+      const url = initialData
+        ? `/api/admin/blog/${initialData.id}`
+        : "/api/admin/blog";
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || "Failed to save post");
+        return;
+      }
+
+      router.push("/admin/blog");
+      router.refresh();
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <div className="p-3 bg-red-500/20 border border-red-500 rounded text-red-400 text-sm">
+          {error}
+        </div>
+      )}
+
+      <div>
+        <label
+          htmlFor="title"
+          className="block text-sm font-medium text-white mb-2"
+        >
+          Title
+        </label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          required
+          placeholder="Enter post title"
+          className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <div>
+        <label
+          htmlFor="slug"
+          className="block text-sm font-medium text-white mb-2"
+        >
+          Slug
+        </label>
+        <input
+          type="text"
+          id="slug"
+          name="slug"
+          value={formData.slug}
+          onChange={handleChange}
+          required
+          placeholder="post-url-slug"
+          className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <div>
+        <label
+          htmlFor="excerpt"
+          className="block text-sm font-medium text-white mb-2"
+        >
+          Excerpt (optional)
+        </label>
+        <input
+          type="text"
+          id="excerpt"
+          name="excerpt"
+          value={formData.excerpt}
+          onChange={handleChange}
+          placeholder="Brief summary of the post"
+          className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label
+            htmlFor="content"
+            className="block text-sm font-medium text-white"
+          >
+            Content
+          </label>
+          <button
+            type="button"
+            onClick={() => setShowPreview(!showPreview)}
+            className="text-xs text-orange-500 hover:text-orange-400"
+          >
+            {showPreview ? "Hide" : "Show"} Preview
+          </button>
+        </div>
+        <p className="text-xs text-white/50 mb-2">
+          Markdown supported: **bold**, _italic_, # H1, ## H2, etc.
+        </p>
+        <textarea
+          id="content"
+          name="content"
+          value={formData.content}
+          onChange={handleChange}
+          required
+          placeholder="Enter post content in Markdown..."
+          rows={12}
+          className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500 font-mono text-sm"
+        />
+      </div>
+
+      {showPreview && (
+        <div className="p-4 bg-white/5 border border-white/20 rounded">
+          <h3 className="text-sm font-medium text-white mb-3">Preview</h3>
+          <div className="prose prose-lg max-w-none prose-p:mb-4 prose-p:leading-7 prose-headings:mt-6 prose-headings:mb-3 dark:prose-invert text-white/80">
+            {/* Basic markdown preview */}
+            {formData.content.split("\n").map((line, i) => {
+              if (line.startsWith("# "))
+                return (
+                  <h1 key={i} className="text-2xl font-bold mt-4 mb-2">
+                    {line.replace("# ", "")}
+                  </h1>
+                );
+              if (line.startsWith("## "))
+                return (
+                  <h2 key={i} className="text-xl font-bold mt-3 mb-2">
+                    {line.replace("## ", "")}
+                  </h2>
+                );
+              if (line.trim())
+                return (
+                  <p key={i} className="mb-3">
+                    {line}
+                  </p>
+                );
+              return <br key={i} />;
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="flex items-center gap-3 pt-4 border-t border-white/10">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-white rounded font-medium transition"
+        >
+          {isLoading ? "Saving..." : initialData ? "Update Post" : "Create Post"}
+        </button>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded font-medium transition"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
+
+==================== FILE: src/components/admin/DeletePostButton.tsx ====================
+
+"use client";
+
+export default function DeletePostButton({ id }: { id: string }) {
+  return (
+    <button
+      onClick={async () => {
+        if (!confirm("Are you sure you want to delete this post?")) return;
+
+        try {
+          const response = await fetch(`/api/admin/blog/${id}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            alert("Failed to delete post");
+          }
+        } catch (error) {
+          alert("Error deleting post");
+          console.error(error);
+        }
+      }}
+      className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded text-sm transition"
+    >
+      Delete
+    </button>
+  );
+}
+
+
+==================== FILE: src/components/admin/ProjectForm.tsx ====================
+
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+interface ProjectFormProps {
+  initialData?: {
+    id: string;
+    title: string;
+    slug: string;
+    description: string;
+    imageUrl: string | null;
+    link: string | null;
+    order: number;
+  };
+}
+
+export default function ProjectForm({ initialData }: ProjectFormProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [formData, setFormData] = useState({
+    title: initialData?.title || "",
+    slug: initialData?.slug || "",
+    description: initialData?.description || "",
+    imageUrl: initialData?.imageUrl || "",
+    link: initialData?.link || "",
+    order: String(initialData?.order ?? 0),
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "title" && !initialData) {
+      const generatedSlug = value
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-");
+      setFormData((prev) => ({ ...prev, slug: generatedSlug }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const method = initialData ? "PATCH" : "POST";
+      const url = initialData
+        ? `/api/admin/projects/${initialData.id}`
+        : "/api/admin/projects";
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          order: Number(formData.order),
+          imageUrl: formData.imageUrl || null,
+          link: formData.link || null,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || "Failed to save project");
+        return;
+      }
+
+      router.push("/admin/projects");
+      router.refresh();
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <div className="p-3 bg-red-500/20 border border-red-500 rounded text-red-400 text-sm">
+          {error}
+        </div>
+      )}
+
+      <div>
+        <label htmlFor="title" className="block text-sm font-medium text-white mb-2">
+          Title
+        </label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          required
+          className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="slug" className="block text-sm font-medium text-white mb-2">
+          Slug
+        </label>
+        <input
+          type="text"
+          id="slug"
+          name="slug"
+          value={formData.slug}
+          onChange={handleChange}
+          required
+          className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="description" className="block text-sm font-medium text-white mb-2">
+          Description
+        </label>
+        <textarea
+          id="description"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          rows={6}
+          required
+          className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <div>
+          <label htmlFor="imageUrl" className="block text-sm font-medium text-white mb-2">
+            Image URL (optional)
+          </label>
+          <input
+            type="url"
+            id="imageUrl"
+            name="imageUrl"
+            value={formData.imageUrl}
+            onChange={handleChange}
+            className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+          />
+        </div>
+        <div>
+          <label htmlFor="link" className="block text-sm font-medium text-white mb-2">
+            Project Link (optional)
+          </label>
+          <input
+            type="url"
+            id="link"
+            name="link"
+            value={formData.link}
+            onChange={handleChange}
+            className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="order" className="block text-sm font-medium text-white mb-2">
+          Order
+        </label>
+        <input
+          type="number"
+          id="order"
+          name="order"
+          value={formData.order}
+          onChange={handleChange}
+          className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <div className="flex items-center gap-3 pt-4 border-t border-white/10">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-white rounded font-medium transition"
+        >
+          {isLoading ? "Saving..." : initialData ? "Update Project" : "Create Project"}
+        </button>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded font-medium transition"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
+
+==================== FILE: src/components/admin/DeleteProjectButton.tsx ====================
+
+"use client";
+
+export default function DeleteProjectButton({ id }: { id: string }) {
+  return (
+    <button
+      onClick={async () => {
+        if (!confirm("Are you sure you want to delete this project?")) return;
+
+        try {
+          const response = await fetch(`/api/admin/projects/${id}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            alert("Failed to delete project");
+          }
+        } catch (error) {
+          alert("Error deleting project");
+          console.error(error);
+        }
+      }}
+      className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded text-sm transition"
+    >
+      Delete
+    </button>
+  );
+}
+
+
+==================== FILE: src/app/layout.tsx ====================
+
+import type { Metadata } from "next";
+import { Cormorant_Garamond, IBM_Plex_Mono, Inter } from "next/font/google";
+import "./globals.css";
+import { Navbar } from "@/components/navbar";
+import { ThemeProvider } from "@/components/theme-provider";
+
+const cormorantGaramond = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-cormorant-garamond",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-ibm-plex-mono",
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ichaka.com.ng"),
+  title: "ichaka | Portfolio & Blog",
+  description: "Ikueze Excel Ikenna (ichaka) portfolio and blog",
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon.ico",
+  },
+  openGraph: {
+    images: ["/apple-touch-icon.png"],
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${cormorantGaramond.variable} ${inter.variable} ${ibmPlexMono.variable} antialiased`}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <Navbar />
+          <main className="border-t border-black/10 px-4 py-8 dark:border-white/10 md:px-6 md:py-10">
+            {children}
+          </main>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+
+
+==================== FILE: src/app/page.tsx ====================
+
+import Link from "next/link";
+import { Reveal } from "@/components/reveal";
+import { SectionProgress } from "@/components/section-progress";
+
+const homeSections = [
+  { id: "manifesto", label: "P.001" },
+  { id: "build", label: "P.002" },
+  { id: "write", label: "P.003" },
+  { id: "channel", label: "P.004" },
+];
+
+export default function HomePage() {
+  return (
+    <div className="space-y-24 pb-24 md:space-y-32 md:pb-32">
+      <SectionProgress sections={homeSections} />
+
+      <section id="manifesto" className="relative min-h-[calc(100vh-140px)] scroll-mt-20">
+        <Reveal>
+          <div className="mono mb-6 flex items-center justify-between text-[11px] uppercase tracking-[0.22em] muted md:mb-10">
+            <p>P.001 / Manifesto</p>
+            <p>Vol. 1 / 2026</p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.04}>
+          <div className="hero-stack">
+            <h1 className="hero-name hero-name-top">EXCEL</h1>
+            <h1 className="hero-name hero-name-bottom">IKUEZE</h1>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <div className="mt-6 grid gap-6 md:mt-8 md:grid-cols-[1fr_auto] md:items-end">
+            <p className="mono max-w-2xl text-[11px] uppercase tracking-[0.2em] muted md:text-xs">
+              Jack of all trades. Master of a few. Product-minded execution from idea to final ship.
+            </p>
+            <p className="mono text-[11px] uppercase tracking-[0.2em] text-orange-500 md:text-xs">
+              Scroll to tune in
+            </p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.14}>
+          <div className="mt-8 flex flex-wrap items-center gap-3 md:mt-10">
+            <Link
+              href="/contact"
+              className="inline-flex rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-zinc-950 transition hover:bg-orange-400"
+            >
+              Send a message
+            </Link>
+            <Link
+              href="/about"
+              className="inline-flex rounded-full border border-white/20 px-6 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-zinc-100 transition hover:bg-white/10"
+            >
+              Read profile
+            </Link>
+          </div>
+        </Reveal>
+      </section>
+
+      <section id="build" className="grid scroll-mt-20 gap-8 md:grid-cols-2 md:gap-10">
+        <Reveal>
+          <div className="card border-white/10">
+            <p className="chapter-label">P.002 / What I Build</p>
+            <h2 className="mt-4 text-3xl font-semibold uppercase tracking-[-0.02em]">Development</h2>
+            <p className="mt-4 muted">
+              Production-grade websites, SaaS products, internal dashboards, and frontend systems
+              that actually convert and scale.
+            </p>
+            <Link href="/skills/development" className="mono mt-6 inline-block text-xs uppercase tracking-[0.16em] text-orange-500">
+              View development work
+            </Link>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.06}>
+          <div id="write" className="card border-white/10 scroll-mt-20">
+            <p className="chapter-label">P.003 / What I Write</p>
+            <h2 className="mt-4 text-3xl font-semibold uppercase tracking-[-0.02em]">Content</h2>
+            <p className="mt-4 muted">
+              Articles and social threads that make technical ideas clear, memorable, and useful
+              to both teams and audiences.
+            </p>
+            <Link href="/skills/content" className="mono mt-6 inline-block text-xs uppercase tracking-[0.16em] text-orange-500">
+              View content work
+            </Link>
+          </div>
+        </Reveal>
+      </section>
+
+      <section id="channel" className="scroll-mt-20">
+        <Reveal>
+          <div className="card border-white/10 md:p-8">
+            <p className="chapter-label">P.004 / Open Channel</p>
+            <h2 className="mt-4 max-w-3xl text-3xl font-semibold uppercase tracking-[-0.02em] md:text-5xl">
+              Let&apos;s make something that means something.
+            </h2>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href="/contact"
+                className="inline-flex rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-zinc-950 transition hover:bg-orange-400"
+              >
+                Start a project
+              </Link>
+              <Link
+                href="/blog"
+                className="inline-flex rounded-full border border-white/20 px-6 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-zinc-100 transition hover:bg-white/10"
+              >
+                Read the blog
+              </Link>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+    </div>
+  );
+}
+
+
+==================== FILE: src/app/blog/page.tsx ====================
+
+import Link from "next/link";
+import { Reveal } from "@/components/reveal";
+import { prisma } from "@/lib/prisma";
+
+export default async function BlogPage() {
+  const posts = await prisma.blogPost.findMany({
+    where: { published: true },
+    orderBy: { publishedAt: "desc" },
+  });
+
+  return (
+    <section className="space-y-8">
+      <Reveal>
+        <h1 className="text-3xl font-semibold md:text-4xl">Blog</h1>
+      </Reveal>
+
+      {posts.length === 0 ? (
+        <Reveal delay={0.05}>
+          <div className="card border-black/10 dark:border-white/10">
+            <p className="muted">
+              No blog posts available yet.
+            </p>
+          </div>
+        </Reveal>
+      ) : null}
+
+      <div className="grid gap-4">
+        {posts.map((post, index) => (
+          <Reveal delay={0.08 + index * 0.04} key={post.id}>
+            <Link
+              href={`/blog/${post.slug}`}
+              className="card block border-black/10 transition hover:border-cyan-400 dark:border-white/10"
+            >
+              <h2 className="text-xl font-medium">{post.title}</h2>
+              {post.excerpt ? <p className="mt-2 muted">{post.excerpt}</p> : null}
+            </Link>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+
+==================== FILE: src/app/blog/[slug]/page.tsx ====================
+
+import { notFound } from "next/navigation";
+import { marked } from "marked";
+import { prisma } from "@/lib/prisma";
+
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+});
+
+type Params = { slug: string };
+
+export default async function BlogPostPage({ params }: { params: Promise<Params> }) {
+  const { slug } = await params;
+  const post = await prisma.blogPost.findUnique({
+    where: { slug },
+  });
+
+  if (!post || !post.published) {
+    notFound();
+  }
+
+  const htmlContent = marked.parse(post.content ?? "") as string;
+
+  return (
+    <article className="mx-auto max-w-3xl space-y-6">
+      <h1 className="text-3xl font-semibold md:text-4xl">{post.title}</h1>
+      {post.content ? (
+        <div
+          className="prose prose-lg max-w-none prose-p:mb-6 prose-p:leading-8 prose-headings:mt-8 prose-headings:mb-4 dark:prose-invert prose-p:text-gray-300 dark:prose-p:text-gray-300"
+          dangerouslySetInnerHTML={{ __html: htmlContent }}
+        />
+      ) : (
+        <p className="muted">No content yet.</p>
+      )}
+    </article>
+  );
+}
+
+
+==================== FILE: src/app/projects/page.tsx ====================
+
+import Link from "next/link";
+import { Reveal } from "@/components/reveal";
+import { prisma } from "@/lib/prisma";
+
+export default async function ProjectsPage() {
+  const projects = await prisma.project.findMany({
+    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+  });
+
+  return (
+    <section className="space-y-8">
+      <Reveal>
+        <h1 className="text-3xl font-semibold md:text-4xl">Projects</h1>
+      </Reveal>
+
+      {projects.length === 0 ? (
+        <Reveal delay={0.05}>
+          <div className="card border-black/10 dark:border-white/10">
+            <p className="muted">No projects available yet.</p>
+          </div>
+        </Reveal>
+      ) : (
+        <div className="grid gap-4">
+          {projects.map((project, index) => (
+            <Reveal delay={0.08 + index * 0.04} key={project.id}>
+              <article className="card border-black/10 transition hover:border-cyan-400 dark:border-white/10">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-medium">{project.title}</h2>
+                    <p className="mt-2 muted">{project.description}</p>
+                  </div>
+                  <span className="mono text-[11px] uppercase tracking-[0.16em] muted">
+                    #{project.order}
+                  </span>
+                </div>
+
+                {project.link ? (
+                  <Link
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mono mt-5 inline-block text-xs uppercase tracking-[0.16em] text-cyan-400"
+                  >
+                    Open project
+                  </Link>
+                ) : null}
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+
+==================== FILE: src/app/admin/layout.tsx ====================
+
+import { auth, signOut } from "@/lib/auth";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
+export default async function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await auth();
+
+  if (!session?.user?.email) {
+    redirect("/admin/login");
+  }
+
+  return (
+    <div className="min-h-screen bg-dark flex">
+      {/* Sidebar */}
+      <aside className="w-64 bg-black border-r border-white/10">
+        <div className="p-6">
+          <h1 className="text-2xl font-bold text-white mb-2">ICHAKA</h1>
+          <p className="text-white/50 text-sm">Admin Panel</p>
+        </div>
+
+        <nav className="space-y-1 px-3 py-6">
+          <NavLink href="/admin/dashboard" label="Dashboard" />
+          <NavLink href="/admin/blog" label="Blog Posts" />
+          <NavLink href="/admin/projects" label="Projects" />
+        </nav>
+
+        <div className="border-t border-white/10 p-4 mt-8">
+          <p className="text-xs text-white/50 mb-3">
+            Signed in as: <br />
+            <span className="text-white/70">{session.user.email}</span>
+          </p>
+          <form
+            action={async () => {
+              "use server";
+              await signOut({ redirectTo: "/admin/login" });
+            }}
+          >
+            <button
+              type="submit"
+              className="w-full px-3 py-2 text-sm bg-white/10 hover:bg-white/20 text-white rounded transition"
+            >
+              Sign Out
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto">
+        <div className="p-8">{children}</div>
+      </main>
+    </div>
+  );
+}
+
+function NavLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="block px-3 py-2 text-white/70 hover:text-white hover:bg-white/10 rounded transition"
+    >
+      {label}
+    </Link>
+  );
+}
+
+
+==================== FILE: src/app/admin/login/page.tsx ====================
+
+"use client";
+
+import { signIn } from "next-auth/react";
+import { FormEvent, useState } from "react";
+import { useSearchParams } from "next/navigation";
+
+export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const callbackUrl = searchParams.get("callbackUrl") || "/admin/dashboard";
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    setMessage("");
+
+    try {
+      const result = await signIn("email", {
+        email,
+        redirect: false,
+        callbackUrl,
+      });
+
+      if (result?.ok) {
+        setMessage("Check your email for a magic link to sign in!");
+        setEmail("");
+      } else {
+        setError("Failed to send sign-in link. Please try again.");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-dark flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-2">Admin</h1>
+          <p className="text-white/60">Sign in to manage your content</p>
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white/5 border border-white/20 rounded-lg p-6 space-y-4"
+        >
+          {error && (
+            <div className="p-3 bg-red-500/20 border border-red-500 rounded text-red-400 text-sm">
+              {error}
+            </div>
+          )}
+
+          {message && (
+            <div className="p-3 bg-green-500/20 border border-green-500 rounded text-green-400 text-sm">
+              {message}
+            </div>
+          )}
+
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="your@email.com"
+              className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-white rounded font-medium transition"
+          >
+            {isLoading ? "Sending link..." : "Send Magic Link"}
+          </button>
+        </form>
+
+        <p className="text-center text-white/50 text-sm mt-6">
+          In development, magic links are logged to the console.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+
+==================== FILE: src/app/admin/dashboard/page.tsx ====================
+
+import { prisma } from "@/lib/prisma";
+
+export default async function DashboardPage() {
+  const postCount = await prisma.blogPost.count();
+  const projectCount = await prisma.project.count();
+  const recentPosts = await prisma.blogPost.findMany({
+    take: 5,
+    orderBy: { createdAt: "desc" },
+  });
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold text-white mb-2">Dashboard</h1>
+        <p className="text-white/60">Welcome to the admin panel</p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+          <p className="text-white/60 text-sm mb-2">Total Blog Posts</p>
+          <p className="text-4xl font-bold text-white">{postCount}</p>
+        </div>
+        <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+          <p className="text-white/60 text-sm mb-2">Total Projects</p>
+          <p className="text-4xl font-bold text-white">{projectCount}</p>
+        </div>
+      </div>
+
+      {/* Recent Posts */}
+      <div>
+        <h2 className="text-xl font-bold text-white mb-4">Recent Blog Posts</h2>
+        {recentPosts.length > 0 ? (
+          <div className="space-y-2">
+            {recentPosts.map((post) => (
+              <div
+                key={post.id}
+                className="bg-white/5 border border-white/10 rounded p-4 flex items-center justify-between"
+              >
+                <div>
+                  <p className="text-white font-medium">{post.title}</p>
+                  <p className="text-white/50 text-sm">
+                    {new Date(post.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <span
+                  className={`px-3 py-1 rounded text-xs font-medium ${
+                    post.published
+                      ? "bg-green-500/20 text-green-400"
+                      : "bg-yellow-500/20 text-yellow-400"
+                  }`}
+                >
+                  {post.published ? "Published" : "Draft"}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-white/60">No blog posts yet</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+==================== FILE: src/app/admin/blog/page.tsx ====================
+
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import DeletePostButton from "@/components/admin/DeletePostButton";
+
+export default async function BlogPage() {
+  const posts = await prisma.blogPost.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-2">Blog Posts</h1>
+          <p className="text-white/60">Manage your blog content</p>
+        </div>
+        <Link
+          href="/admin/blog/new"
+          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded font-medium transition"
+        >
+          New Post
+        </Link>
+      </div>
+
+      {posts.length > 0 ? (
+        <div className="space-y-2">
+          {posts.map((post) => (
+            <div
+              key={post.id}
+              className="bg-white/5 border border-white/10 rounded-lg p-4 flex items-center justify-between hover:bg-white/10 transition"
+            >
+              <div className="flex-1 min-w-0">
+                <h3 className="text-white font-medium truncate">{post.title}</h3>
+                <div className="flex items-center gap-3 mt-1">
+                  <p className="text-white/50 text-sm">/blog/{post.slug}</p>
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-medium ${
+                      post.published
+                        ? "bg-green-500/20 text-green-400"
+                        : "bg-yellow-500/20 text-yellow-400"
+                    }`}
+                  >
+                    {post.published ? "Published" : "Draft"}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 ml-4">
+                <span className="text-white/50 text-sm">
+                  {new Date(post.createdAt).toLocaleDateString()}
+                </span>
+                <Link
+                  href={`/admin/blog/${post.id}/edit`}
+                  className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded text-sm transition"
+                >
+                  Edit
+                </Link>
+                <DeletePostButton id={post.id} />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <p className="text-white/60 mb-4">No blog posts yet</p>
+          <Link
+            href="/admin/blog/new"
+            className="inline-block px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded font-medium transition"
+          >
+            Create First Post
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+==================== FILE: src/app/admin/blog/new/page.tsx ====================
+
+import PostForm from "@/components/admin/PostForm";
+
+export default function NewBlogPage() {
+  return (
+    <div className="max-w-4xl">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-white mb-2">New Blog Post</h1>
+        <p className="text-white/60">Create a new blog post</p>
+      </div>
+
+      <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+        <PostForm />
+      </div>
+    </div>
+  );
+}
+
+
+==================== FILE: src/app/admin/blog/[id]/edit/page.tsx ====================
+
+import PostForm from "@/components/admin/PostForm";
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+
+export default async function EditBlogPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  const post = await prisma.blogPost.findUnique({
+    where: { id },
+  });
+
+  if (!post) {
+    notFound();
+  }
+
+  return (
+    <div className="max-w-4xl">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-white mb-2">Edit Blog Post</h1>
+        <p className="text-white/60">{post.title}</p>
+      </div>
+
+      <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+        <PostForm
+          initialData={{
+            id: post.id,
+            title: post.title,
+            slug: post.slug,
+            excerpt: post.excerpt ?? undefined,
+            content: post.content,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+
+==================== FILE: src/app/admin/projects/page.tsx ====================
+
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import DeleteProjectButton from "@/components/admin/DeleteProjectButton";
+
+export default async function ProjectsPage() {
+  const projects = await prisma.project.findMany({
+    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+  });
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-2">Projects</h1>
+          <p className="text-white/60">Manage your portfolio projects</p>
+        </div>
+        <Link
+          href="/admin/projects/new"
+          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded font-medium transition"
+        >
+          New Project
+        </Link>
+      </div>
+
+      {projects.length > 0 ? (
+        <div className="space-y-2">
+          {projects.map((project) => (
+            <div
+              key={project.id}
+              className="bg-white/5 border border-white/10 rounded-lg p-4 flex items-center justify-between hover:bg-white/10 transition"
+            >
+              <div className="flex-1 min-w-0">
+                <h3 className="text-white font-medium truncate">{project.title}</h3>
+                <div className="flex items-center gap-3 mt-1">
+                  <p className="text-white/50 text-sm">/projects#{project.slug}</p>
+                  <span className="px-2 py-1 rounded text-xs font-medium bg-white/10 text-white/70">
+                    Order: {project.order}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 ml-4">
+                <span className="text-white/50 text-sm">
+                  {new Date(project.createdAt).toLocaleDateString()}
+                </span>
+                <Link
+                  href={`/admin/projects/${project.id}/edit`}
+                  className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded text-sm transition"
+                >
+                  Edit
+                </Link>
+                <DeleteProjectButton id={project.id} />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <p className="text-white/60 mb-4">No projects yet</p>
+          <Link
+            href="/admin/projects/new"
+            className="inline-block px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded font-medium transition"
+          >
+            Create First Project
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+==================== FILE: src/app/admin/projects/new/page.tsx ====================
+
+import ProjectForm from "@/components/admin/ProjectForm";
+
+export default function NewProjectPage() {
+  return (
+    <div className="max-w-4xl">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-white mb-2">New Project</h1>
+        <p className="text-white/60">Create a new portfolio project</p>
+      </div>
+
+      <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+        <ProjectForm />
+      </div>
+    </div>
+  );
+}
+
+
+==================== FILE: src/app/admin/projects/[id]/edit/page.tsx ====================
+
+import ProjectForm from "@/components/admin/ProjectForm";
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+
+export default async function EditProjectPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  const project = await prisma.project.findUnique({
+    where: { id },
+  });
+
+  if (!project) {
+    notFound();
+  }
+
+  return (
+    <div className="max-w-4xl">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-white mb-2">Edit Project</h1>
+        <p className="text-white/60">{project.title}</p>
+      </div>
+
+      <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+        <ProjectForm initialData={project} />
+      </div>
+    </div>
+  );
+}
+
+
+==================== FILE: src/app/api/auth/[...nextauth]/route.ts ====================
+
+import { handlers } from "@/lib/auth";
+
+export const { GET, POST } = handlers;
+
+
+==================== FILE: src/app/api/admin/blog/route.ts ====================
+
+import { auth, isAdminEmail } from "@/lib/auth";
+import { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+
+// GET all blog posts (admin only)
+export async function GET() {
+  const session = await auth();
+
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const posts = await prisma.blogPost.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return NextResponse.json(posts);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch posts" },
+      { status: 500 }
+    );
+  }
+}
+
+// POST create new blog post
+export async function POST(req: NextRequest) {
+  const session = await auth();
+
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await req.json();
+    const { title, slug, excerpt, content } = body;
+
+    if (!title || !slug || !content) {
+      return NextResponse.json(
+        { error: "Missing required fields: title, slug, content" },
+        { status: 400 }
+      );
+    }
+
+    const post = await prisma.blogPost.create({
+      data: {
+        title,
+        slug,
+        excerpt: excerpt || null,
+        content,
+        published: true,
+        publishedAt: new Date(),
+      },
+    });
+
+    return NextResponse.json(post, { status: 201 });
+  } catch (error: unknown) {
+    console.error("Error creating post:", error);
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return NextResponse.json(
+        { error: "A post with this slug already exists" },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json(
+      { error: "Failed to create post" },
+      { status: 500 }
+    );
+  }
+}
+
+
+==================== FILE: src/app/api/admin/blog/[id]/route.ts ====================
+
+import { auth, isAdminEmail } from "@/lib/auth";
+import { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { id } = await params;
+    const post = await prisma.blogPost.findUnique({ where: { id } });
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(post);
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    return NextResponse.json({ error: "Failed to fetch post" }, { status: 500 });
+  }
+}
+
+// PATCH update blog post
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await req.json();
+    const { title, slug, excerpt, content } = body;
+    const { id } = await params;
+
+    const post = await prisma.blogPost.update({
+      where: { id },
+      data: {
+        ...(title && { title }),
+        ...(slug && { slug }),
+        ...(excerpt !== undefined && { excerpt }),
+        ...(content && { content }),
+      },
+    });
+
+    return NextResponse.json(post);
+  } catch (error: unknown) {
+    console.error("Error updating post:", error);
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      return NextResponse.json(
+        { error: "Post not found" },
+        { status: 404 }
+      );
+    }
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return NextResponse.json(
+        { error: "A post with this slug already exists" },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json(
+      { error: "Failed to update post" },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE blog post
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { id } = await params;
+
+    await prisma.blogPost.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error: unknown) {
+    console.error("Error deleting post:", error);
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      return NextResponse.json(
+        { error: "Post not found" },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json(
+      { error: "Failed to delete post" },
+      { status: 500 }
+    );
+  }
+}
+
+
+==================== FILE: src/app/api/admin/projects/route.ts ====================
+
+import { auth, isAdminEmail } from "@/lib/auth";
+import { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET() {
+  const session = await auth();
+
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const projects = await prisma.project.findMany({
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+    });
+
+    return NextResponse.json(projects);
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    return NextResponse.json({ error: "Failed to fetch projects" }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  const session = await auth();
+
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await req.json();
+    const { title, slug, description, imageUrl, link, order } = body;
+
+    if (!title || !slug || !description) {
+      return NextResponse.json(
+        { error: "Missing required fields: title, slug, description" },
+        { status: 400 }
+      );
+    }
+
+    const project = await prisma.project.create({
+      data: {
+        title,
+        slug,
+        description,
+        imageUrl: imageUrl || null,
+        link: link || null,
+        order: Number.isFinite(order) ? order : 0,
+      },
+    });
+
+    return NextResponse.json(project, { status: 201 });
+  } catch (error: unknown) {
+    console.error("Error creating project:", error);
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return NextResponse.json(
+        { error: "A project with this slug already exists" },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json({ error: "Failed to create project" }, { status: 500 });
+  }
+}
+
+
+==================== FILE: src/app/api/admin/projects/[id]/route.ts ====================
+
+import { auth, isAdminEmail } from "@/lib/auth";
+import { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { id } = await params;
+    const project = await prisma.project.findUnique({ where: { id } });
+
+    if (!project) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(project);
+  } catch (error) {
+    console.error("Error fetching project:", error);
+    return NextResponse.json({ error: "Failed to fetch project" }, { status: 500 });
+  }
+}
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await req.json();
+    const { title, slug, description, imageUrl, link, order } = body;
+    const { id } = await params;
+
+    const project = await prisma.project.update({
+      where: { id },
+      data: {
+        ...(title && { title }),
+        ...(slug && { slug }),
+        ...(description && { description }),
+        ...(imageUrl !== undefined && { imageUrl }),
+        ...(link !== undefined && { link }),
+        ...(order !== undefined && { order: Number(order) }),
+      },
+    });
+
+    return NextResponse.json(project);
+  } catch (error: unknown) {
+    console.error("Error updating project:", error);
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return NextResponse.json(
+        { error: "A project with this slug already exists" },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json({ error: "Failed to update project" }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { id } = await params;
+    await prisma.project.delete({ where: { id } });
+
+    return NextResponse.json({ success: true });
+  } catch (error: unknown) {
+    console.error("Error deleting project:", error);
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+    return NextResponse.json({ error: "Failed to delete project" }, { status: 500 });
+  }
+}

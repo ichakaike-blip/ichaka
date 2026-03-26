@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { Reveal } from "@/components/reveal";
+import ContactForm from "@/components/contact-form";
+
+export const metadata: Metadata = {
+  title: "Contact | ichaka",
+  description: "Get in touch with Ichaka for projects and collaborations.",
+};
 
 const socialLinks = [
   { label: "X (Twitter)", href: "https://x.com/" },
@@ -18,31 +25,7 @@ export default function ContactPage() {
       </Reveal>
 
       <Reveal delay={0.1}>
-        <form className="card space-y-4 border-black/10 dark:border-white/10">
-          <input
-            className="w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none ring-cyan-400/40 focus:ring-4 dark:border-white/10 dark:bg-zinc-900"
-            placeholder="Name"
-            name="name"
-          />
-          <input
-            className="w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none ring-cyan-400/40 focus:ring-4 dark:border-white/10 dark:bg-zinc-900"
-            placeholder="Email"
-            name="email"
-            type="email"
-          />
-          <textarea
-            className="w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none ring-cyan-400/40 focus:ring-4 dark:border-white/10 dark:bg-zinc-900"
-            placeholder="Your message"
-            name="message"
-            rows={6}
-          />
-          <button
-            type="submit"
-            className="rounded-full bg-cyan-400 px-6 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-cyan-300"
-          >
-            Send message
-          </button>
-        </form>
+        <ContactForm />
       </Reveal>
 
       <Reveal delay={0.15}>

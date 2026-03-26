@@ -1,6 +1,17 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { SectionProgress } from "@/components/section-progress";
+
+export const metadata: Metadata = {
+  title: "Home | ichaka",
+  description: "Ikueze Excel Ikenna portfolio home.",
+  openGraph: {
+    title: "Home | ichaka",
+    description: "Ikueze Excel Ikenna portfolio home.",
+    images: ["/api/og?title=Ichaka"],
+  },
+};
 
 const homeSections = [
   { id: "manifesto", label: "P.001" },

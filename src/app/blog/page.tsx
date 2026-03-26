@@ -1,14 +1,23 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
-import { getSanityClient, hasSanityConfig } from "@/lib/sanity/client";
-import { postsQuery, type Post } from "@/lib/sanity/queries";
+import { prisma } from "@/lib/prisma";
+
+export const metadata: Metadata = {
+  title: "Blog | ichaka",
+  description: "Thoughts, notes, and writing from Ichaka.",
+  openGraph: {
+    title: "Blog | ichaka",
+    description: "Thoughts, notes, and writing from Ichaka.",
+    images: ["/api/og?title=Blog"],
+  },
+};
 
 export default async function BlogPage() {
-  let posts: Post[] = [];
-
-  if (hasSanityConfig) {
-    posts = await getSanityClient().fetch<Post[]>(postsQuery);
-  }
+  const posts = await prisma.blogPost.findMany({
+    where: { published: true },
+    orderBy: { publishedAt: "desc" },
+  });
 
   return (
     <section className="space-y-8">
@@ -16,12 +25,11 @@ export default async function BlogPage() {
         <h1 className="text-3xl font-semibold md:text-4xl">Blog</h1>
       </Reveal>
 
-      {!hasSanityConfig ? (
+      {posts.length === 0 ? (
         <Reveal delay={0.05}>
           <div className="card border-black/10 dark:border-white/10">
             <p className="muted">
-              Sanity is not connected yet. Add environment variables from .env.example and run the
-              Studio setup in /studio.
+              No blog posts available yet.
             </p>
           </div>
         </Reveal>
@@ -29,9 +37,9 @@ export default async function BlogPage() {
 
       <div className="grid gap-4">
         {posts.map((post, index) => (
-          <Reveal delay={0.08 + index * 0.04} key={post._id}>
+          <Reveal delay={0.08 + index * 0.04} key={post.id}>
             <Link
-              href={`/blog/${post.slug.current}`}
+              href={`/blog/${post.slug}`}
               className="card block border-black/10 transition hover:border-cyan-400 dark:border-white/10"
             >
               <h2 className="text-xl font-medium">{post.title}</h2>

@@ -1,6 +1,7 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
-import { getSanityClient, hasSanityConfig } from "@/lib/sanity/client";
+import { prisma } from "@/lib/prisma";
 
 marked.setOptions({
   breaks: true,
@@ -9,25 +10,38 @@ marked.setOptions({
 
 type Params = { slug: string };
 
-type PostDetail = {
-  title: string;
-  content?: string;
-};
-
-const postBySlugQuery = `*[_type == "post" && slug.current == $slug][0]{
-  title,
-  content
-}`;
-
-export default async function BlogPostPage({ params }: { params: Promise<Params> }) {
-  if (!hasSanityConfig) {
-    notFound();
-  }
-
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<Params>;
+}): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getSanityClient().fetch<PostDetail | null>(postBySlugQuery, { slug });
+  const post = await prisma.blogPost.findUnique({ where: { slug } });
 
   if (!post) {
+    return {
+      title: "Post not found | ichaka",
+    };
+  }
+
+  return {
+    title: `${post.title} | ichaka`,
+    description: post.excerpt ?? "Blog post by ichaka.",
+    openGraph: {
+      title: post.title,
+      description: post.excerpt ?? "Blog post by ichaka.",
+      images: [`/api/og?title=${encodeURIComponent(post.title)}`],
+    },
+  };
+}
+
+export default async function BlogPostPage({ params }: { params: Promise<Params> }) {
+  const { slug } = await params;
+  const post = await prisma.blogPost.findUnique({
+    where: { slug },
+  });
+
+  if (!post || !post.published) {
     notFound();
   }
 

@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import { Reveal } from "@/components/reveal";
+
+export const metadata: Metadata = {
+  title: "About | ichaka",
+  description: "About Ikueze Excel Ikenna, also known as Ichaka.",
+};
 
 export default function AboutPage() {
   return (

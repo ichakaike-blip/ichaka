@@ -3,6 +3,7 @@ import { Cormorant_Garamond, IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { siteUrl } from "@/lib/site";
 
 const cormorantGaramond = Cormorant_Garamond({
   subsets: ["latin"],
@@ -22,7 +23,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ichaka.com.ng"),
+  metadataBase: new URL(siteUrl),
   title: "ichaka | Portfolio & Blog",
   description: "Ikueze Excel Ikenna (ichaka) portfolio and blog",
   icons: {
@@ -31,9 +32,18 @@ export const metadata: Metadata = {
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
     ],
     apple: "/apple-touch-icon.png",
-    shortcut: "/favicon.ico",
   },
   openGraph: {
+    type: "website",
+    url: siteUrl,
+    title: "ichaka | Portfolio & Blog",
+    description: "Ikueze Excel Ikenna (ichaka) portfolio and blog",
+    images: ["/apple-touch-icon.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ichaka | Portfolio & Blog",
+    description: "Ikueze Excel Ikenna (ichaka) portfolio and blog",
     images: ["/apple-touch-icon.png"],
   },
 };
