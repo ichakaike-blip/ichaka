@@ -3,6 +3,8 @@ import Image from "next/image";
 import { Reveal } from "@/components/reveal";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function ContentSkillsPage() {
   const projects = await prisma.contentProject.findMany({
     where: { published: true },

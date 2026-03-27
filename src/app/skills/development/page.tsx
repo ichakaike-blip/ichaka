@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function DevelopmentSkillsPage() {
   const projects = await prisma.devProject.findMany({
     where: { published: true },
