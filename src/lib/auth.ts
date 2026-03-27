@@ -9,7 +9,7 @@ const authSecret =
   process.env.NEXTAUTH_SECRET ||
   (process.env.NODE_ENV === "development" ? "dev-only-change-me" : undefined);
 
-export const ADMIN_PASSCODE = "4321";
+export const ADMIN_PASSCODE = process.env.ADMIN_PASSCODE || "";
 
 export function isAdminEmail(email?: string | null) {
   if (!email) {
@@ -18,7 +18,7 @@ export function isAdminEmail(email?: string | null) {
 
   const configured = process.env.ADMIN_EMAIL?.trim().toLowerCase();
   if (!configured) {
-    return true;
+    return false; // deny access rather than grant it when ADMIN_EMAIL is not set
   }
 
   return email.toLowerCase() === configured;
