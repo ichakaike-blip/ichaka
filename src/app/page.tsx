@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Reveal } from "@/components/reveal";
 import { SectionProgress } from "@/components/section-progress";
 
@@ -25,16 +26,32 @@ export default function HomePage() {
     <div className="space-y-24 pb-24 md:space-y-32 md:pb-32">
       <SectionProgress sections={homeSections} />
 
-      <section id="manifesto" className="relative min-h-[calc(100vh-140px)] scroll-mt-20">
+      <section id="manifesto" className="relative min-h-[calc(100vh-140px)] scroll-mt-20 flex flex-col justify-center pb-12">
+        {/* Background Image placed by the side of the name, bound to the full section height! */}
+        <div 
+          className="absolute right-0 top-0 bottom-0 pointer-events-none opacity-50 dark:opacity-30 md:opacity-70 dark:md:opacity-50 xl:translate-x-12 z-0 w-full md:w-[60%] lg:w-[50%]"
+          style={{ WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 65% 40%, black 20%, transparent 100%)" }}
+        >
+          <div className="relative w-full h-full grayscale mix-blend-luminosity">
+            <Image
+              src="/hero.jpg"
+              alt="Excel Ikueze"
+              fill
+              priority
+              className="object-cover object-center md:object-[center_top]"
+            />
+          </div>
+        </div>
+
         <Reveal>
-          <div className="mono mb-6 flex items-center justify-between text-[11px] uppercase tracking-[0.22em] muted md:mb-10">
+          <div className="mono mb-6 flex items-center justify-between text-[11px] uppercase tracking-[0.22em] muted md:mb-10 pt-4 relative z-10 w-full">
             <p>P.001 / Manifesto</p>
             <p>Vol. 1 / 2026</p>
           </div>
         </Reveal>
 
         <Reveal delay={0.04}>
-          <div className="hero-stack">
+          <div className="hero-stack relative z-10">
             <h1 className="hero-name hero-name-top">EXCEL</h1>
             <h1 className="hero-name hero-name-bottom">IKUEZE</h1>
           </div>

@@ -38,13 +38,13 @@ export const metadata: Metadata = {
     url: siteUrl,
     title: "ichaka | Portfolio & Blog",
     description: "Ikueze Excel Ikenna (ichaka) portfolio and blog",
-    images: ["/logo.png"],
+    images: ["/logo.jpg"],
   },
   twitter: {
     card: "summary_large_image",
     title: "ichaka | Portfolio & Blog",
     description: "Ikueze Excel Ikenna (ichaka) portfolio and blog",
-    images: ["/logo.png"],
+    images: ["/logo.jpg"],
   },
 };
 
