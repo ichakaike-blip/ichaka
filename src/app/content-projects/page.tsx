@@ -4,6 +4,9 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { Reveal } from "@/components/reveal";
 
+export const dynamic = "force-dynamic";
+
+
 export const metadata: Metadata = {
   title: "Content Projects | ichaka",
   description: "Articles and X threads curated by Ichaka.",

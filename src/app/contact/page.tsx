@@ -8,9 +8,9 @@ export const metadata: Metadata = {
 };
 
 const socialLinks = [
-  { label: "X (Twitter)", href: "https://x.com/" },
-  { label: "GitHub", href: "https://github.com/" },
-  { label: "LinkedIn", href: "https://linkedin.com/" },
+  { label: "X (Twitter)", href: "https://x.com/web3watch4l2" },
+  { label: "GitHub", href: "https://github.com/ichakaike-blip" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/ikueze-excel-68aa64361/" },
 ];
 
 export default function ContactPage() {

@@ -3,6 +3,9 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Reveal } from "@/components/reveal";
 
+export const dynamic = "force-dynamic";
+
+
 export const metadata: Metadata = {
   title: "Development Projects | ichaka",
   description: "Websites and app projects built by Ichaka.",

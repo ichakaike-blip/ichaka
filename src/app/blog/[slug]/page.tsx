@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
+
 marked.setOptions({
   breaks: true,
   gfm: true,

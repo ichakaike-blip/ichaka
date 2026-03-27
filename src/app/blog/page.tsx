@@ -3,6 +3,9 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
+
 export const metadata: Metadata = {
   title: "Blog | ichaka",
   description: "Thoughts, notes, and writing from Ichaka.",

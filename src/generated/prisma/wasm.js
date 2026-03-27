@@ -87,6 +87,9 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -146,6 +149,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -196,8 +204,7 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "sqlite",
-  "postinstall": false,
+  "activeProvider": "postgresql",
   "inlineDatasources": {
     "db": {
       "url": {
@@ -206,8 +213,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String    @id @default(cuid())\n  email         String    @unique\n  emailVerified DateTime?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n\n  @@map(\"users\")\n}\n\nmodel VerificationToken {\n  identifier String\n  token      String   @unique\n  expires    DateTime\n\n  @@unique([identifier, token])\n  @@map(\"verification_tokens\")\n}\n\nmodel BlogPost {\n  id          String    @id @default(cuid())\n  title       String\n  slug        String    @unique\n  excerpt     String?\n  content     String\n  published   Boolean   @default(false)\n  publishedAt DateTime?\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n\n  @@index([slug])\n  @@map(\"blog_posts\")\n}\n\nmodel DevProject {\n  id          String   @id @default(cuid())\n  title       String\n  slug        String   @unique\n  description String\n  link        String\n  order       Int      @default(0)\n  published   Boolean  @default(true)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  @@index([slug])\n  @@map(\"dev_projects\")\n}\n\nmodel ContentProject {\n  id          String   @id @default(cuid())\n  title       String\n  slug        String   @unique\n  description String\n  imageUrl    String\n  link        String\n  order       Int      @default(0)\n  published   Boolean  @default(true)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  @@index([slug])\n  @@map(\"content_projects\")\n}\n",
-  "inlineSchemaHash": "e7c8aa9a49ca57f96a2e55cb426c0a145e2065edcc15139426da8dffde2ac56e",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String    @id @default(cuid())\n  email         String    @unique\n  emailVerified DateTime?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n\n  @@map(\"users\")\n}\n\nmodel VerificationToken {\n  identifier String\n  token      String   @unique\n  expires    DateTime\n\n  @@unique([identifier, token])\n  @@map(\"verification_tokens\")\n}\n\nmodel BlogPost {\n  id          String    @id @default(cuid())\n  title       String\n  slug        String    @unique\n  excerpt     String?\n  content     String\n  published   Boolean   @default(false)\n  publishedAt DateTime?\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n\n  @@index([slug])\n  @@map(\"blog_posts\")\n}\n\nmodel DevProject {\n  id          String   @id @default(cuid())\n  title       String\n  slug        String   @unique\n  description String\n  link        String\n  order       Int      @default(0)\n  published   Boolean  @default(true)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  @@index([slug])\n  @@map(\"dev_projects\")\n}\n\nmodel ContentProject {\n  id          String   @id @default(cuid())\n  title       String\n  slug        String   @unique\n  description String\n  imageUrl    String\n  link        String\n  order       Int      @default(0)\n  published   Boolean  @default(true)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  @@index([slug])\n  @@map(\"content_projects\")\n}\n",
+  "inlineSchemaHash": "3212cefd3276b3ea86200d0ad2d739259e4f57e5f034ea42cb7a413a6d118127",
   "copyEngine": true
 }
 config.dirname = '/'

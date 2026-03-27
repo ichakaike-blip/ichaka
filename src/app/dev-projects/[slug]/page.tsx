@@ -3,14 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
-export async function generateStaticParams() {
-  const projects = await prisma.devProject.findMany({
-    where: { published: true },
-    select: { slug: true },
-  });
-
-  return projects.map((project) => ({ slug: project.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
