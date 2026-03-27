@@ -33,12 +33,21 @@ export default function HomePage() {
           style={{ WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 65% 40%, black 20%, transparent 100%)" }}
         >
           <div className="relative w-full h-full grayscale mix-blend-luminosity">
+            {/* Dark Mode Hero */}
             <Image
               src="/hero.jpg"
-              alt="Excel Ikueze"
+              alt="Excel Ikueze Dark"
               fill
               priority
-              className="object-cover object-center md:object-[center_top]"
+              className="object-cover object-center md:object-[center_top] hidden dark:block"
+            />
+            {/* Light (White) Mode Hero */}
+            <Image
+              src="/hero2.jpg"
+              alt="Excel Ikueze Light"
+              fill
+              priority
+              className="object-cover object-center md:object-[center_top] block dark:hidden"
             />
           </div>
         </div>
