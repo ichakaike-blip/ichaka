@@ -18,6 +18,7 @@ export default async function BlogPage() {
     where: { published: true },
     orderBy: { publishedAt: "desc" },
   });
+  type Post = (typeof posts)[number];
 
   return (
     <section className="space-y-8">
@@ -36,7 +37,7 @@ export default async function BlogPage() {
       ) : null}
 
       <div className="grid gap-4">
-        {posts.map((post, index) => (
+        {posts.map((post: Post, index: number) => (
           <Reveal delay={0.08 + index * 0.04} key={post.id}>
             <Link
               href={`/blog/${post.slug}`}

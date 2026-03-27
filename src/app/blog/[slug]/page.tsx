@@ -45,7 +45,11 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
     notFound();
   }
 
-  const htmlContent = marked.parse(post.content ?? "") as string;
+  const contentWithUnderline = (post.content ?? "").replace(
+    /\+\+([^+]+)\+\+/g,
+    "<u>$1</u>"
+  );
+  const htmlContent = marked.parse(contentWithUnderline) as string;
 
   return (
     <article className="mx-auto max-w-3xl space-y-6">

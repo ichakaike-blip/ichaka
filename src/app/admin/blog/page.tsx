@@ -1,23 +1,24 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import DeletePostButton from "@/components/admin/DeletePostButton";
-import TogglePostPublishedButton from "@/components/admin/TogglePostPublishedButton";
+import TogglePostPublishedButton from "../../../components/admin/TogglePostPublishedButton";
 
 export default async function BlogPage() {
   const posts = await prisma.blogPost.findMany({
     orderBy: { createdAt: "desc" },
   });
+  type AdminPost = (typeof posts)[number];
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Blog Posts</h1>
-          <p className="text-white/60">Manage your blog content</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Blog Posts</h1>
+          <p className="text-foreground/60">Manage your blog content</p>
         </div>
         <Link
           href="/admin/blog/new"
-          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded font-medium transition"
+          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-foreground rounded font-medium transition"
         >
           New Post
         </Link>
@@ -25,15 +26,15 @@ export default async function BlogPage() {
 
       {posts.length > 0 ? (
         <div className="space-y-2">
-          {posts.map((post) => (
+          {posts.map((post: AdminPost) => (
             <div
               key={post.id}
-              className="bg-white/5 border border-white/10 rounded-lg p-4 flex items-center justify-between hover:bg-white/10 transition"
+              className="bg-foreground/5 border border-foreground/10 rounded-lg p-4 flex items-center justify-between hover:bg-foreground/10 transition"
             >
               <div className="flex-1 min-w-0">
-                <h3 className="text-white font-medium truncate">{post.title}</h3>
+                <h3 className="text-foreground font-medium truncate">{post.title}</h3>
                 <div className="flex items-center gap-3 mt-1">
-                  <p className="text-white/50 text-sm">/blog/{post.slug}</p>
+                  <p className="text-foreground/50 text-sm">/blog/{post.slug}</p>
                   <span
                     className={`px-2 py-1 rounded text-xs font-medium ${
                       post.published
@@ -46,12 +47,12 @@ export default async function BlogPage() {
                 </div>
               </div>
               <div className="flex items-center gap-3 ml-4">
-                <span className="text-white/50 text-sm">
+                <span className="text-foreground/50 text-sm">
                   {new Date(post.createdAt).toLocaleDateString()}
                 </span>
                 <Link
                   href={`/admin/blog/${post.id}/edit`}
-                  className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded text-sm transition"
+                  className="px-3 py-1 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded text-sm transition"
                 >
                   Edit
                 </Link>
@@ -63,10 +64,10 @@ export default async function BlogPage() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-white/60 mb-4">No blog posts yet</p>
+          <p className="text-foreground/60 mb-4">No blog posts yet</p>
           <Link
             href="/admin/blog/new"
-            className="inline-block px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded font-medium transition"
+            className="inline-block px-4 py-2 bg-orange-500 hover:bg-orange-600 text-foreground rounded font-medium transition"
           >
             Create First Post
           </Link>

@@ -1,5 +1,5 @@
-import { auth, isAdminEmail, signOut } from "@/lib/auth";
-import { headers } from "next/headers";
+import { auth, hasAdminAccess } from "@/lib/auth";
+import { cookies, headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -16,46 +16,42 @@ export default async function AdminLayout({
   }
 
   const session = await auth();
+  const cookieStore = await cookies();
+  const passcodeCookie = cookieStore.get("admin-passcode-auth")?.value ?? null;
 
-  if (!isAdminEmail(session?.user?.email)) {
+  if (!hasAdminAccess(session?.user?.email, passcodeCookie)) {
     redirect("/admin/login");
   }
 
-  const adminEmail = session?.user?.email ?? "";
+  const adminIdentity = passcodeCookie === "1" ? "Passcode session" : session?.user?.email ?? "";
 
   return (
-    <div className="min-h-screen bg-dark flex">
+    <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-black border-r border-white/10">
+      <aside className="w-64 bg-black border-r border-foreground/10">
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-white mb-2">ICHAKA</h1>
-          <p className="text-white/50 text-sm">Admin Panel</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2">ICHAKA</h1>
+          <p className="text-foreground/50 text-sm">Admin Panel</p>
         </div>
 
         <nav className="space-y-1 px-3 py-6">
           <NavLink href="/admin/dashboard" label="Dashboard" />
           <NavLink href="/admin/blog" label="Blog Posts" />
-          <NavLink href="/admin/projects" label="Projects" />
+          <NavLink href="/admin/dev-projects" label="Development" />
+          <NavLink href="/admin/content-projects" label="Content" />
         </nav>
 
-        <div className="border-t border-white/10 p-4 mt-8">
-          <p className="text-xs text-white/50 mb-3">
+        <div className="border-t border-foreground/10 p-4 mt-8">
+          <p className="text-xs text-foreground/50 mb-3">
             Signed in as: <br />
-            <span className="text-white/70">{adminEmail}</span>
+            <span className="text-foreground/70">{adminIdentity}</span>
           </p>
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/admin/login" });
-            }}
+          <a
+            href="/api/admin/passcode-logout"
+            className="block w-full px-3 py-2 text-center text-sm bg-foreground/10 hover:bg-foreground/20 text-foreground rounded transition"
           >
-            <button
-              type="submit"
-              className="w-full px-3 py-2 text-sm bg-white/10 hover:bg-white/20 text-white rounded transition"
-            >
-              Sign Out
-            </button>
-          </form>
+            Sign Out
+          </a>
         </div>
       </aside>
 
@@ -71,7 +67,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
-      className="block px-3 py-2 text-white/70 hover:text-white hover:bg-white/10 rounded transition"
+      className="block px-3 py-2 text-foreground/70 hover:text-foreground hover:bg-foreground/10 rounded transition"
     >
       {label}
     </Link>

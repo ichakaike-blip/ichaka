@@ -1,24 +1,13 @@
+import Link from "next/link";
 import { Reveal } from "@/components/reveal";
+import { prisma } from "@/lib/prisma";
 
-const sampleProjects = [
-  {
-    title: "Marketing Site Revamp",
-    type: "Website",
-    href: "#",
-  },
-  {
-    title: "SaaS Dashboard",
-    type: "GitHub Repo",
-    href: "#",
-  },
-  {
-    title: "Creator Analytics Tool",
-    type: "Project Snapshot",
-    href: "#",
-  },
-];
+export default async function DevelopmentSkillsPage() {
+  const projects = await prisma.devProject.findMany({
+    where: { published: true },
+    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+  });
 
-export default function DevelopmentSkillsPage() {
   return (
     <section className="space-y-8">
       <Reveal>
@@ -26,18 +15,32 @@ export default function DevelopmentSkillsPage() {
       </Reveal>
       <Reveal delay={0.05}>
         <p className="muted max-w-2xl">
-          Websites, products, screenshots, and public repositories. Replace placeholders with your
-          real portfolio entries from Sanity.
+          Real project work, linked to live URLs and paired with visual previews.
         </p>
       </Reveal>
 
       <div className="grid gap-4 md:grid-cols-3">
-        {sampleProjects.map((item, index) => (
+        {projects.length === 0 ? (
+          <Reveal delay={0.08}>
+            <div className="card border-black/10 dark:border-white/10 md:col-span-3">
+              <p className="muted">No projects published yet.</p>
+              <Link href="/admin/dev-projects" className="mono mt-4 inline-block text-xs uppercase tracking-[0.16em] text-orange-500">
+                Add projects in admin
+              </Link>
+            </div>
+          </Reveal>
+        ) : projects.map((item, index: number) => (
           <Reveal delay={0.08 + index * 0.05} key={item.title}>
-            <a href={item.href} className="card block border-black/10 dark:border-white/10">
-              <p className="mb-2 text-xs uppercase tracking-[0.2em] muted">{item.type}</p>
+            <Link
+              href={`/dev-projects/${item.slug}`}
+              className="card block border-black/10 transition hover:border-orange-500 dark:border-white/10"
+            >
+              <p className="mb-2 text-xs uppercase tracking-[0.2em] muted">
+                Project Details
+              </p>
               <h2 className="text-lg font-medium">{item.title}</h2>
-            </a>
+              <p className="mt-2 text-sm muted line-clamp-3">{item.description}</p>
+            </Link>
           </Reveal>
         ))}
       </div>

@@ -1,5 +1,5 @@
-import { auth, isAdminEmail } from "@/lib/auth";
-import { Prisma } from "@prisma/client";
+import { auth, hasAdminAccess } from "@/lib/auth";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,7 +9,7 @@ export async function GET(
 ) {
   const session = await auth();
 
-  if (!isAdminEmail(session?.user?.email)) {
+  if (!hasAdminAccess(session?.user?.email, req.cookies.get("admin-passcode-auth")?.value ?? null)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -35,7 +35,7 @@ export async function PATCH(
 ) {
   const session = await auth();
 
-  if (!isAdminEmail(session?.user?.email)) {
+  if (!hasAdminAccess(session?.user?.email, req.cookies.get("admin-passcode-auth")?.value ?? null)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -61,19 +61,13 @@ export async function PATCH(
     return NextResponse.json(post);
   } catch (error: unknown) {
     console.error("Error updating post:", error);
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2025"
-    ) {
+    if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
       return NextResponse.json(
         { error: "Post not found" },
         { status: 404 }
       );
     }
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
+    if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
       return NextResponse.json(
         { error: "A post with this slug already exists" },
         { status: 400 }
@@ -93,7 +87,7 @@ export async function DELETE(
 ) {
   const session = await auth();
 
-  if (!isAdminEmail(session?.user?.email)) {
+  if (!hasAdminAccess(session?.user?.email, req.cookies.get("admin-passcode-auth")?.value ?? null)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -107,10 +101,7 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     console.error("Error deleting post:", error);
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2025"
-    ) {
+    if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
       return NextResponse.json(
         { error: "Post not found" },
         { status: 404 }

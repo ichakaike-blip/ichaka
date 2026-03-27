@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -44,17 +45,33 @@ model BlogPost {
   @@map("blog_posts")
 }
 
-model Project {
+model DevProject {
   id          String   @id @default(cuid())
   title       String
   slug        String   @unique
   description String
-  imageUrl    String?
-  link        String?
+  link        String
   order       Int      @default(0)
+  published   Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([slug])
-  @@map("projects")
+  @@map("dev_projects")
+}
+
+model ContentProject {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  imageUrl    String
+  link        String
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@map("content_projects")
 }

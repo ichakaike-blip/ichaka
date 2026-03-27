@@ -78,7 +78,7 @@ export default function HomePage() {
               Production-grade websites, SaaS products, internal dashboards, and frontend systems
               that actually convert and scale.
             </p>
-            <Link href="/skills/development" className="mono mt-6 inline-block text-xs uppercase tracking-[0.16em] text-orange-500">
+            <Link href="/dev-projects" className="mono mt-6 inline-block text-xs uppercase tracking-[0.16em] text-orange-500">
               View development work
             </Link>
           </div>
@@ -92,7 +92,7 @@ export default function HomePage() {
               Articles and social threads that make technical ideas clear, memorable, and useful
               to both teams and audiences.
             </p>
-            <Link href="/skills/content" className="mono mt-6 inline-block text-xs uppercase tracking-[0.16em] text-orange-500">
+            <Link href="/content-projects" className="mono mt-6 inline-block text-xs uppercase tracking-[0.16em] text-orange-500">
               View content work
             </Link>
           </div>

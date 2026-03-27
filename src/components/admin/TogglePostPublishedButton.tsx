@@ -27,7 +27,7 @@ export default function TogglePostPublishedButton({
           alert("Error updating publish status");
         }
       }}
-      className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded text-sm transition"
+      className="px-3 py-1 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded text-sm transition"
     >
       {published ? "Unpublish" : "Publish"}
     </button>

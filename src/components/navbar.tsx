@@ -1,25 +1,30 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
 import { MobileNav } from "@/components/mobile-nav";
+
+const ThemeToggle = dynamic(
+  () => import("@/components/theme-toggle").then((mod) => mod.ThemeToggle),
+  {
+    ssr: false,
+    loading: () => <span className="block h-[34px] w-[34px] rounded-full border border-black/10 dark:border-white/10" />,
+  }
+);
 
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
-  { href: "/skills/content", label: "Content" },
-  { href: "/skills/development", label: "Development" },
+  { href: "/dev-projects", label: "Development" },
+  { href: "/content-projects", label: "Content" },
   { href: "/blog", label: "Blog" },
-  { href: "/projects", label: "Projects" },
   { href: "/contact", label: "Contact" },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
 
   return (
     <header className="sticky top-0 z-50 border-b border-black/10 bg-[rgb(var(--bg),0.75)] backdrop-blur-xl dark:border-white/10">
@@ -58,13 +63,7 @@ export function Navbar() {
         </ul>
 
         <div className="flex items-center gap-2">
-          <button
-            aria-label="Toggle theme"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="rounded-full border border-black/10 bg-white/75 p-2 text-zinc-800 hover:bg-white dark:border-white/10 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
-          >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
+          <ThemeToggle />
 
           <MobileNav items={navItems} />
         </div>

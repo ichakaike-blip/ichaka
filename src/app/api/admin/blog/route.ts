@@ -1,13 +1,13 @@
-import { auth, isAdminEmail } from "@/lib/auth";
-import { Prisma } from "@prisma/client";
+import { auth, hasAdminAccess } from "@/lib/auth";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET all blog posts (admin only)
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await auth();
 
-  if (!isAdminEmail(session?.user?.email)) {
+  if (!hasAdminAccess(session?.user?.email, req.cookies.get("admin-passcode-auth")?.value ?? null)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -29,7 +29,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const session = await auth();
 
-  if (!isAdminEmail(session?.user?.email)) {
+  if (!hasAdminAccess(session?.user?.email, req.cookies.get("admin-passcode-auth")?.value ?? null)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -58,10 +58,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(post, { status: 201 });
   } catch (error: unknown) {
     console.error("Error creating post:", error);
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
+    if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
       return NextResponse.json(
         { error: "A post with this slug already exists" },
         { status: 400 }

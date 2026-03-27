@@ -1,5 +1,6 @@
 "use client";
 
+import { marked } from "marked";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -19,6 +20,26 @@ export default function PostForm({ initialData }: PostFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPreview, setShowPreview] = useState(false);
+
+  marked.setOptions({
+    breaks: true,
+    gfm: true,
+  });
+
+  const parseForPreview = (content: string) => {
+    const withUnderline = content.replace(/\+\+([^+]+)\+\+/g, "<u>$1</u>");
+    return marked.parse(withUnderline) as string;
+  };
+
+  const injectFormatting = (prefix: string, suffix = "") => {
+    setFormData((prev) => {
+      const template = `${prefix}${suffix}`;
+      return {
+        ...prev,
+        content: prev.content ? `${prev.content}\n${template}` : template,
+      };
+    });
+  };
 
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
@@ -94,7 +115,7 @@ export default function PostForm({ initialData }: PostFormProps) {
       <div>
         <label
           htmlFor="title"
-          className="block text-sm font-medium text-white mb-2"
+          className="block text-sm font-medium text-foreground mb-2"
         >
           Title
         </label>
@@ -106,14 +127,14 @@ export default function PostForm({ initialData }: PostFormProps) {
           onChange={handleChange}
           required
           placeholder="Enter post title"
-          className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+          className="w-full px-3 py-2 bg-foreground/5 border border-foreground/20 rounded text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500"
         />
       </div>
 
       <div>
         <label
           htmlFor="slug"
-          className="block text-sm font-medium text-white mb-2"
+          className="block text-sm font-medium text-foreground mb-2"
         >
           Slug
         </label>
@@ -125,14 +146,14 @@ export default function PostForm({ initialData }: PostFormProps) {
           onChange={handleChange}
           required
           placeholder="post-url-slug"
-          className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+          className="w-full px-3 py-2 bg-foreground/5 border border-foreground/20 rounded text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500"
         />
       </div>
 
       <div>
         <label
           htmlFor="excerpt"
-          className="block text-sm font-medium text-white mb-2"
+          className="block text-sm font-medium text-foreground mb-2"
         >
           Excerpt (optional)
         </label>
@@ -143,7 +164,7 @@ export default function PostForm({ initialData }: PostFormProps) {
           value={formData.excerpt}
           onChange={handleChange}
           placeholder="Brief summary of the post"
-          className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+          className="w-full px-3 py-2 bg-foreground/5 border border-foreground/20 rounded text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500"
         />
       </div>
 
@@ -151,7 +172,7 @@ export default function PostForm({ initialData }: PostFormProps) {
         <div className="flex items-center justify-between mb-2">
           <label
             htmlFor="content"
-            className="block text-sm font-medium text-white"
+            className="block text-sm font-medium text-foreground"
           >
             Content
           </label>
@@ -163,9 +184,53 @@ export default function PostForm({ initialData }: PostFormProps) {
             {showPreview ? "Hide" : "Show"} Preview
           </button>
         </div>
-        <p className="text-xs text-white/50 mb-2">
-          Markdown supported: **bold**, _italic_, # H1, ## H2, etc.
+        <p className="text-xs text-foreground/50 mb-2">
+          Markdown supported: **bold**, _italic_, ++underline++, # Heading, ## Subheading, and blank lines for new sections.
         </p>
+        <div className="mb-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => injectFormatting("**bold text**")}
+            className="rounded border border-foreground/20 bg-foreground/5 px-2 py-1 text-xs text-foreground/80 hover:bg-foreground/10"
+          >
+            Bold
+          </button>
+          <button
+            type="button"
+            onClick={() => injectFormatting("_italic text_")}
+            className="rounded border border-foreground/20 bg-foreground/5 px-2 py-1 text-xs text-foreground/80 hover:bg-foreground/10"
+          >
+            Italic
+          </button>
+          <button
+            type="button"
+            onClick={() => injectFormatting("++underlined text++")}
+            className="rounded border border-foreground/20 bg-foreground/5 px-2 py-1 text-xs text-foreground/80 hover:bg-foreground/10"
+          >
+            Underline
+          </button>
+          <button
+            type="button"
+            onClick={() => injectFormatting("# Heading")}
+            className="rounded border border-foreground/20 bg-foreground/5 px-2 py-1 text-xs text-foreground/80 hover:bg-foreground/10"
+          >
+            H1
+          </button>
+          <button
+            type="button"
+            onClick={() => injectFormatting("## Subheading")}
+            className="rounded border border-foreground/20 bg-foreground/5 px-2 py-1 text-xs text-foreground/80 hover:bg-foreground/10"
+          >
+            H2
+          </button>
+          <button
+            type="button"
+            onClick={() => injectFormatting("", "\n")}
+            className="rounded border border-foreground/20 bg-foreground/5 px-2 py-1 text-xs text-foreground/80 hover:bg-foreground/10"
+          >
+            New Section
+          </button>
+        </div>
         <textarea
           id="content"
           name="content"
@@ -174,12 +239,12 @@ export default function PostForm({ initialData }: PostFormProps) {
           required
           placeholder="Enter post content in Markdown..."
           rows={12}
-          className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500 font-mono text-sm"
+          className="w-full px-3 py-2 bg-foreground/5 border border-foreground/20 rounded text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500 font-mono text-sm"
         />
       </div>
 
-      <div className="flex items-center justify-between rounded border border-white/20 bg-white/5 px-3 py-2">
-        <label htmlFor="published" className="text-sm font-medium text-white">
+      <div className="flex items-center justify-between rounded border border-foreground/20 bg-foreground/5 px-3 py-2">
+        <label htmlFor="published" className="text-sm font-medium text-foreground">
           Published
         </label>
         <input
@@ -193,47 +258,26 @@ export default function PostForm({ initialData }: PostFormProps) {
       </div>
 
       {showPreview && (
-        <div className="p-4 bg-white/5 border border-white/20 rounded">
-          <h3 className="text-sm font-medium text-white mb-3">Preview</h3>
-          <div className="prose prose-lg max-w-none prose-p:mb-4 prose-p:leading-7 prose-headings:mt-6 prose-headings:mb-3 dark:prose-invert text-white/80">
-            {/* Basic markdown preview */}
-            {formData.content.split("\n").map((line, i) => {
-              if (line.startsWith("# "))
-                return (
-                  <h1 key={i} className="text-2xl font-bold mt-4 mb-2">
-                    {line.replace("# ", "")}
-                  </h1>
-                );
-              if (line.startsWith("## "))
-                return (
-                  <h2 key={i} className="text-xl font-bold mt-3 mb-2">
-                    {line.replace("## ", "")}
-                  </h2>
-                );
-              if (line.trim())
-                return (
-                  <p key={i} className="mb-3">
-                    {line}
-                  </p>
-                );
-              return <br key={i} />;
-            })}
+        <div className="p-4 bg-foreground/5 border border-foreground/20 rounded">
+          <h3 className="text-sm font-medium text-foreground mb-3">Preview</h3>
+          <div className="prose prose-lg max-w-none prose-p:mb-4 prose-p:leading-7 prose-headings:mt-6 prose-headings:mb-3 dark:prose-invert text-foreground/80">
+            <div dangerouslySetInnerHTML={{ __html: parseForPreview(formData.content) }} />
           </div>
         </div>
       )}
 
-      <div className="flex items-center gap-3 pt-4 border-t border-white/10">
+      <div className="flex items-center gap-3 pt-4 border-t border-foreground/10">
         <button
           type="submit"
           disabled={isLoading}
-          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-white rounded font-medium transition"
+          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-foreground rounded font-medium transition"
         >
           {isLoading ? "Saving..." : initialData ? "Update Post" : "Create Post"}
         </button>
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded font-medium transition"
+          className="px-4 py-2 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded font-medium transition"
         >
           Cancel
         </button>

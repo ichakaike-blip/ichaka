@@ -1,14 +1,13 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { FormEvent, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState("");
+  const [passcode, setPasscode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
   const callbackUrl = searchParams.get("callbackUrl") || "/admin/dashboard";
@@ -17,21 +16,22 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    setMessage("");
 
     try {
-      const result = await signIn("email", {
-        email,
-        redirect: false,
-        callbackUrl,
+      const response = await fetch("/api/admin/passcode-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: passcode }),
       });
 
-      if (result?.ok) {
-        setMessage("Check your email for a magic link to sign in!");
-        setEmail("");
-      } else {
-        setError("Failed to send sign-in link. Please try again.");
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || "Invalid passcode");
+        return;
       }
+
+      router.push(callbackUrl);
+      router.refresh();
     } catch (err) {
       setError("An error occurred. Please try again.");
       console.error(err);
@@ -41,16 +41,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-dark flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Admin</h1>
-          <p className="text-white/60">Sign in to manage your content</p>
+          <h1 className="text-4xl font-bold text-foreground mb-2">Admin</h1>
+          <p className="text-foreground/60">Enter your passcode to manage your content</p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white/5 border border-white/20 rounded-lg p-6 space-y-4"
+          className="bg-foreground/5 border border-foreground/20 rounded-lg p-6 space-y-4"
         >
           {error && (
             <div className="p-3 bg-red-500/20 border border-red-500 rounded text-red-400 text-sm">
@@ -58,38 +58,32 @@ export default function LoginPage() {
             </div>
           )}
 
-          {message && (
-            <div className="p-3 bg-green-500/20 border border-green-500 rounded text-green-400 text-sm">
-              {message}
-            </div>
-          )}
-
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-              Email
+            <label htmlFor="passcode" className="block text-sm font-medium text-foreground mb-2">
+              Admin Passcode
             </label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="password"
+              id="passcode"
+              value={passcode}
+              onChange={(e) => setPasscode(e.target.value)}
               required
-              placeholder="your@email.com"
-              className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder:text-white/50 focus:outline-none focus:border-orange-500"
+              placeholder="Enter passcode"
+              className="w-full px-3 py-2 bg-foreground/5 border border-foreground/20 rounded text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500"
             />
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-white rounded font-medium transition"
+            className="w-full py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-foreground rounded font-medium transition"
           >
-            {isLoading ? "Sending link..." : "Send Magic Link"}
+            {isLoading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
-        <p className="text-center text-white/50 text-sm mt-6">
-          In development, magic links are logged to the console.
+        <p className="text-center text-foreground/50 text-sm mt-6">
+          Current admin code: 4321
         </p>
       </div>
     </div>

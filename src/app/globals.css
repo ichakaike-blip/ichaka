@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 :root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
   --bg: 244 244 245;
   --panel: 255 255 255;
   --text: 24 24 27;
@@ -12,6 +14,8 @@
 }
 
 .dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
   --bg: 9 9 11;
   --panel: 24 24 27;
   --text: 244 244 245;
@@ -79,7 +83,12 @@ body {
 }
 
 .hero-name-top {
-  @apply -mt-2 text-zinc-100;
+  @apply -mt-2;
+  color: rgb(9 9 11);
+}
+
+.dark .hero-name-top {
+  color: rgb(244 244 245);
 }
 
 .hero-name-bottom {

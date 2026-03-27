@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Reveal } from "@/components/reveal";
-import ContactForm from "@/components/contact-form";
+import ContactForm from "../../components/contact-form";
 
 export const metadata: Metadata = {
   title: "Contact | ichaka",
