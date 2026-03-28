@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 interface ContentProjectFormProps {
@@ -19,7 +19,10 @@ interface ContentProjectFormProps {
 export default function ContentProjectForm({ initialData }: ContentProjectFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
   const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
@@ -30,6 +33,7 @@ export default function ContentProjectForm({ initialData }: ContentProjectFormPr
     order: String(initialData?.order ?? 0),
     published: initialData?.published ?? true,
   });
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -50,6 +54,26 @@ export default function ContentProjectForm({ initialData }: ContentProjectFormPr
   const handlePublishedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = e.target;
     setFormData((prev) => ({ ...prev, published: checked }));
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploading(true);
+    setUploadError("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      setFormData((prev) => ({ ...prev, imageUrl: data.url }));
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -143,8 +167,45 @@ export default function ContentProjectForm({ initialData }: ContentProjectFormPr
 
       <div>
         <label htmlFor="imageUrl" className="block text-sm font-medium text-foreground mb-2">
-          Image URL
+          Image
         </label>
+
+        {/* Upload button */}
+        <div className="flex gap-2 mb-2">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className="px-3 py-2 bg-foreground/10 hover:bg-foreground/20 disabled:opacity-50 text-foreground rounded text-sm font-medium transition"
+          >
+            {isUploading ? "Uploading..." : "↑ Upload Image"}
+          </button>
+          <span className="text-foreground/40 text-sm self-center">or paste a URL below</span>
+        </div>
+
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleImageUpload}
+        />
+
+        {/* Preview if URL is set */}
+        {formData.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={formData.imageUrl}
+            alt="Preview"
+            className="mb-2 h-28 w-full rounded object-cover border border-foreground/10"
+          />
+        )}
+
+        {uploadError && (
+          <p className="mb-2 text-xs text-red-400">{uploadError}</p>
+        )}
+
         <input
           type="text"
           id="imageUrl"
@@ -152,6 +213,7 @@ export default function ContentProjectForm({ initialData }: ContentProjectFormPr
           value={formData.imageUrl}
           onChange={handleChange}
           required
+          placeholder="https://..."
           className="w-full px-3 py-2 bg-foreground/5 border border-foreground/20 rounded text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500"
         />
       </div>

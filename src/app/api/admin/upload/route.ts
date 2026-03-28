@@ -1,21 +1,10 @@
 import { auth, hasAdminAccess } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { randomUUID } from "node:crypto";
-import { promises as fs } from "node:fs";
-import path from "node:path";
 
 export const runtime = "nodejs";
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
-
-function getExtensionFromType(type: string) {
-  if (type === "image/jpeg") return "jpg";
-  if (type === "image/png") return "png";
-  if (type === "image/webp") return "webp";
-  if (type === "image/gif") return "gif";
-  return "bin";
-}
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -40,18 +29,36 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Image must be 5MB or less" }, { status: 400 });
     }
 
-    const ext = getExtensionFromType(file.type);
+    // Use Vercel Blob in production, local filesystem in development
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      const { put } = await import("@vercel/blob");
+      const blob = await put(file.name, file, { access: "public" });
+      return NextResponse.json({ url: blob.url });
+    }
+
+    // Local dev fallback — save to public/uploads/
+    const { randomUUID } = await import("node:crypto");
+    const { promises: fs } = await import("node:fs");
+    const path = await import("node:path");
+
+    function getExt(type: string) {
+      if (type === "image/jpeg") return "jpg";
+      if (type === "image/png") return "png";
+      if (type === "image/webp") return "webp";
+      if (type === "image/gif") return "gif";
+      return "bin";
+    }
+
+    const ext = getExt(file.type);
     const fileName = `${Date.now()}-${randomUUID()}.${ext}`;
     const uploadDir = path.join(process.cwd(), "public", "uploads");
     const filePath = path.join(uploadDir, fileName);
 
     await fs.mkdir(uploadDir, { recursive: true });
-
     const buffer = Buffer.from(await file.arrayBuffer());
     await fs.writeFile(filePath, buffer);
 
-    const url = `/uploads/${fileName}`;
-    return NextResponse.json({ url });
+    return NextResponse.json({ url: `/uploads/${fileName}` });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json({ error: "Failed to upload image" }, { status: 500 });
