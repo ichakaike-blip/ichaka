@@ -4,15 +4,18 @@ import Image from "next/image";
 import { Reveal } from "@/components/reveal";
 import { SectionProgress } from "@/components/section-progress";
 
+import { siteUrl } from "@/lib/site";
+
 export const metadata: Metadata = {
-  title: "Home | ichaka",
-  description: "Ikueze Excel Ikenna portfolio home.",
+  title: "Home | Ichaka",
+  description: "Ikueze Excel Ikenna (ichaka). I'm a Product Manager and Software Developer executing from idea to final ship.",
   openGraph: {
-    title: "Home | ichaka",
-    description: "Ikueze Excel Ikenna portfolio home.",
-    images: ["/api/og?title=Ichaka"],
+    title: "Ikueze Excel Ikenna (ichaka)",
+    description: "Welcome to my portfolio. Jack of all trades. Master of a few. Product-minded execution from idea to final ship.",
+    images: ["/api/og?title=Ikueze%20Excel%20Ikenna"],
   },
 };
+
 
 const homeSections = [
   { id: "manifesto", label: "P.001" },
@@ -22,8 +25,37 @@ const homeSections = [
 ];
 
 export default function HomePage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Ikueze Excel Ikenna",
+    alternateName: ["ichaka", "EXCEL"],
+    url: siteUrl,
+    image: `${siteUrl}/hero.jpg`,
+    sameAs: [
+      "https://x.com/web3watch4l2",
+      "https://github.com/ichakaike-blip",
+      "https://www.linkedin.com/in/ikueze-excel-68aa64361/"
+    ],
+    jobTitle: "Product Manager & Full-Stack Developer",
+    knowsAbout: [
+      "Product Management",
+      "Software Development",
+      "Web Development",
+      "Next.js",
+      "React",
+      "AI Technology",
+      "Content Creation"
+    ]
+  };
+
   return (
     <div className="space-y-24 pb-24 md:space-y-32 md:pb-32">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
       <SectionProgress sections={homeSections} />
 
       <section id="manifesto" className="relative min-h-[calc(100vh-140px)] scroll-mt-20 flex flex-col justify-center pb-12">

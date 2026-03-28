@@ -24,8 +24,24 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "ichaka | Portfolio & Blog",
-  description: "Ikueze Excel Ikenna (ichaka) portfolio and blog",
+  title: {
+    default: "Ikueze Excel Ikenna (ichaka) | Product Manager & Developer",
+    template: "%s | Ikueze Excel Ikenna (ichaka)",
+  },
+  description: "Ikueze Excel Ikenna, also known as Ichaka. Product-minded execution from idea to final ship. Specialist in Product Management, Web Development, and AI Technology.",
+  keywords: [
+    "Ikueze Excel Ikenna",
+    "ichaka",
+    "EXCEL",
+    "Ikueze",
+    "Product Manager",
+    "Software Developer",
+    "Web Developer",
+    "AI Technology",
+    "Portfolio",
+  ],
+  authors: [{ name: "Ikueze Excel Ikenna" }],
+  creator: "Ikueze Excel Ikenna",
   icons: {
     icon: [
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
@@ -36,14 +52,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: siteUrl,
-    title: "ichaka | Portfolio & Blog",
-    description: "Ikueze Excel Ikenna (ichaka) portfolio and blog",
+    title: "Ikueze Excel Ikenna (ichaka) | Product Manager & Developer",
+    description: "Ikueze Excel Ikenna, also known as Ichaka. Product-minded execution from idea to final ship.",
+    siteName: "Ikueze Excel Ikenna (ichaka)",
     images: ["/logo.jpg"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ichaka | Portfolio & Blog",
-    description: "Ikueze Excel Ikenna (ichaka) portfolio and blog",
+    title: "Ikueze Excel Ikenna (ichaka) | Product Manager & Developer",
+    description: "Ikueze Excel Ikenna, also known as Ichaka. Product-minded execution from idea to final ship.",
     images: ["/logo.jpg"],
   },
 };
