@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { marked } from "marked";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+});
+
 
 export async function generateMetadata({
   params,
@@ -50,7 +57,10 @@ export default async function DevProjectDetailPage({
       <div>
         <p className="mono text-xs uppercase tracking-[0.2em] muted">Development Project</p>
         <h1 className="mt-2 text-3xl font-semibold md:text-4xl">{project.title}</h1>
-        <p className="mt-3 max-w-3xl muted">{project.description}</p>
+        <div
+          className="mt-3 max-w-3xl prose prose-p:muted prose-p:leading-7 prose-p:mb-4 dark:prose-invert"
+          dangerouslySetInnerHTML={{ __html: marked.parse(project.description) as string }}
+        />
       </div>
 
       <div className="relative w-full aspect-video rounded overflow-hidden border border-black/10 dark:border-white/10 pointer-events-auto">
