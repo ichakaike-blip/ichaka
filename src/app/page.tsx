@@ -101,7 +101,7 @@ export default function HomePage() {
         <Reveal delay={0.1}>
           <div className="mt-6 grid gap-6 md:mt-8 md:grid-cols-[1fr_auto] md:items-end">
             <p className="mono max-w-2xl text-[11px] uppercase tracking-[0.2em] muted md:text-xs">
-              Jack of all trades. Master of a few. Product-minded execution from idea to final ship.
+              Jack of all trades. Master of a few.
             </p>
             <p className="mono text-[11px] uppercase tracking-[0.2em] text-orange-500 md:text-xs">
               Scroll to tune in
