@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import DeletePostButton from "@/components/admin/DeletePostButton";
 import TogglePostPublishedButton from "../../../components/admin/TogglePostPublishedButton";
 
+export const dynamic = "force-dynamic";
+
 export default async function BlogPage() {
   const posts = await prisma.blogPost.findMany({
     orderBy: { createdAt: "desc" },

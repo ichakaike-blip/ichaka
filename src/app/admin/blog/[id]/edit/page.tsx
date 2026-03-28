@@ -2,6 +2,8 @@ import PostForm from "@/components/admin/PostForm";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function EditBlogPage({
   params,
 }: {

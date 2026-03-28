@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import DeleteContentProjectButton from "@/components/admin/DeleteContentProjectButton";
 
+export const dynamic = "force-dynamic";
+
 export default async function ContentProjectsPage() {
   const projects = await prisma.contentProject.findMany({
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
