@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     default: "Ikueze Excel Ikenna (ichaka) | Product Manager & Developer",
     template: "%s | Ikueze Excel Ikenna (ichaka)",
   },
-  description: "Ikueze Excel Ikenna, also known as Ichaka. Product-minded execution from idea to final ship. Specialist in Product Management, Web Development, and AI Technology.",
+  description: "Ikueze Excel Ikenna, also known as Ichaka. Jack of all trades. Master of a few. Specialist in Product Management, Web Development, and AI Technology.",
   keywords: [
     "Ikueze Excel Ikenna",
     "ichaka",
@@ -53,14 +53,14 @@ export const metadata: Metadata = {
     type: "website",
     url: siteUrl,
     title: "Ikueze Excel Ikenna (ichaka) | Product Manager & Developer",
-    description: "Ikueze Excel Ikenna, also known as Ichaka. Product-minded execution from idea to final ship.",
+    description: "Ikueze Excel Ikenna, also known as Ichaka. Jack of all trades. Master of a few.",
     siteName: "Ikueze Excel Ikenna (ichaka)",
     images: ["/logo.jpg"],
   },
   twitter: {
     card: "summary_large_image",
     title: "Ikueze Excel Ikenna (ichaka) | Product Manager & Developer",
-    description: "Ikueze Excel Ikenna, also known as Ichaka. Product-minded execution from idea to final ship.",
+    description: "Ikueze Excel Ikenna, also known as Ichaka. Jack of all trades. Master of a few.",
     images: ["/logo.jpg"],
   },
 };

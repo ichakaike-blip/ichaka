@@ -8,10 +8,10 @@ import { siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Home | Ichaka",
-  description: "Ikueze Excel Ikenna (ichaka). I'm a Product Manager and Software Developer executing from idea to final ship.",
+  description: "Ikueze Excel Ikenna (ichaka). Jack of all trades. Master of a few.",
   openGraph: {
     title: "Ikueze Excel Ikenna (ichaka)",
-    description: "Welcome to my portfolio. Jack of all trades. Master of a few. Product-minded execution from idea to final ship.",
+    description: "Welcome to my portfolio. Jack of all trades. Master of a few.",
     images: ["/api/og?title=Ikueze%20Excel%20Ikenna"],
   },
 };
