@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { prisma } from "@/lib/prisma";
+import { Reveal } from "@/components/reveal";
+import CommentSection from "@/components/CommentSection";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +50,11 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
     notFound();
   }
 
+  const comments = await prisma.comment.findMany({
+    where: { postId: post.id },
+    orderBy: { createdAt: "asc" },
+  });
+
   const contentWithUnderline = (post.content ?? "").replace(
     /\+\+([^+]+)\+\+/g,
     "<u>$1</u>"
@@ -65,6 +72,18 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
       ) : (
         <p className="muted">No content yet.</p>
       )}
+
+      <Reveal delay={0.16}>
+        <div className="pt-8 border-t border-black/10 dark:border-white/10 mt-12">
+          <CommentSection
+            postId={post.id}
+            initialComments={comments.map((c) => ({
+              ...c,
+              createdAt: c.createdAt.toISOString(),
+            }))}
+          />
+        </div>
+      </Reveal>
     </article>
   );
 }

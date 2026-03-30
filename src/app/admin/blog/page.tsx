@@ -9,6 +9,9 @@ export const dynamic = "force-dynamic";
 export default async function BlogPage() {
   const posts = await prisma.blogPost.findMany({
     orderBy: { createdAt: "desc" },
+    include: {
+      _count: { select: { comments: true } },
+    },
   });
   type AdminPost = (typeof posts)[number];
 
@@ -38,6 +41,7 @@ export default async function BlogPage() {
                 <h3 className="text-foreground font-medium truncate">{post.title}</h3>
                 <div className="flex items-center gap-3 mt-1">
                   <p className="text-foreground/50 text-sm">/blog/{post.slug}</p>
+                  <span className="text-foreground/40 text-xs">{post._count.comments} comments</span>
                   <span
                     className={`px-2 py-1 rounded text-xs font-medium ${
                       post.published
@@ -54,6 +58,12 @@ export default async function BlogPage() {
                   {new Date(post.createdAt).toLocaleDateString()}
                 </span>
                 {post.published && <NotifySubscribersButton postId={post.id} />}
+                <Link
+                  href={`/admin/blog/${post.id}/comments`}
+                  className="px-3 py-1 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded text-sm transition"
+                >
+                  Comments ({post._count.comments})
+                </Link>
                 <Link
                   href={`/admin/blog/${post.id}/edit`}
                   className="px-3 py-1 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded text-sm transition"

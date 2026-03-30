@@ -40,6 +40,7 @@ model BlogPost {
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  comments    Comment[]
 
   @@index([slug])
   @@map("blog_posts")
@@ -83,4 +84,16 @@ model Subscriber {
   createdAt   DateTime @default(now())
 
   @@map("subscribers")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  name      String
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+  @@map("comments")
 }

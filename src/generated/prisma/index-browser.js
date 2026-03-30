@@ -179,6 +179,14 @@ exports.Prisma.SubscriberScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.CommentScalarFieldEnum = {
+  id: 'id',
+  postId: 'postId',
+  name: 'name',
+  body: 'body',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -201,7 +209,8 @@ exports.Prisma.ModelName = {
   BlogPost: 'BlogPost',
   DevProject: 'DevProject',
   ContentProject: 'ContentProject',
-  Subscriber: 'Subscriber'
+  Subscriber: 'Subscriber',
+  Comment: 'Comment'
 };
 
 /**
