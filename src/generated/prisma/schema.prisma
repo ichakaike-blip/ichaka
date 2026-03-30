@@ -75,3 +75,12 @@ model ContentProject {
   @@index([slug])
   @@map("content_projects")
 }
+
+model Subscriber {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  confirmedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@map("subscribers")
+}

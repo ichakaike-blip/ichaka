@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { prisma } from "@/lib/prisma";
+import SubscribeForm from "@/components/SubscribeForm";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,10 @@ export default async function BlogPage() {
     <section className="space-y-8">
       <Reveal>
         <h1 className="text-3xl font-semibold md:text-4xl">Blog</h1>
+      </Reveal>
+
+      <Reveal delay={0.05}>
+        <SubscribeForm />
       </Reveal>
 
       {posts.length === 0 ? (

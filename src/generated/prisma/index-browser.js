@@ -172,6 +172,13 @@ exports.Prisma.ContentProjectScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SubscriberScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  confirmedAt: 'confirmedAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -193,7 +200,8 @@ exports.Prisma.ModelName = {
   VerificationToken: 'VerificationToken',
   BlogPost: 'BlogPost',
   DevProject: 'DevProject',
-  ContentProject: 'ContentProject'
+  ContentProject: 'ContentProject',
+  Subscriber: 'Subscriber'
 };
 
 /**

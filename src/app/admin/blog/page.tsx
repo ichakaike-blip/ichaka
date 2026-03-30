@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import DeletePostButton from "@/components/admin/DeletePostButton";
 import TogglePostPublishedButton from "../../../components/admin/TogglePostPublishedButton";
+import NotifySubscribersButton from "@/components/admin/NotifySubscribersButton";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,7 @@ export default async function BlogPage() {
                 <span className="text-foreground/50 text-sm">
                   {new Date(post.createdAt).toLocaleDateString()}
                 </span>
+                {post.published && <NotifySubscribersButton postId={post.id} />}
                 <Link
                   href={`/admin/blog/${post.id}/edit`}
                   className="px-3 py-1 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded text-sm transition"
