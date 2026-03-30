@@ -55,10 +55,12 @@ export default async function DashboardPage() {
           <p className="text-foreground/60 text-sm mb-2">Content Projects</p>
           <p className="text-4xl font-bold text-foreground">{contentCount}</p>
         </div>
-        <div className="bg-foreground/5 border border-foreground/10 rounded-lg p-6 border-orange-500/20">
-          <p className="text-orange-500 text-sm mb-2">Subscribers</p>
+        <Link href="/admin/subscribers" className="block bg-foreground/5 border border-foreground/10 rounded-lg p-6 border-orange-500/20 hover:border-orange-500/50 transition">
+          <p className="text-orange-500 text-sm mb-2 flex items-center justify-between">
+            Subscribers <span>View &rarr;</span>
+          </p>
           <p className="text-4xl font-bold text-orange-500">{subscriberCount}</p>
-        </div>
+        </Link>
       </div>
 
       {/* Recent Posts */}
