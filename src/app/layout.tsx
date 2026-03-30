@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { siteUrl } from "@/lib/site";
+import { Analytics } from "@vercel/analytics/react";
 
 const cormorantGaramond = Cormorant_Garamond({
   subsets: ["latin"],
@@ -78,6 +79,7 @@ export default function RootLayout({
           <main className="border-t border-black/10 px-4 py-8 dark:border-white/10 md:px-6 md:py-10">
             {children}
           </main>
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
