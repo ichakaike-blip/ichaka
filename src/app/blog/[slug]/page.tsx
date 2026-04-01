@@ -13,6 +13,53 @@ marked.setOptions({
   gfm: true,
 });
 
+const videoExtension = {
+  name: 'videoExtension',
+  level: 'block' as const,
+  start(src: string) { return src.match(/^https?:\/\//)?.index; },
+  tokenizer(src: string) {
+    const rule = /^(https?:\/\/[^\s]+?\.(?:mp4|webm|ogg))(?:\n|$)/;
+    const match = rule.exec(src);
+    if (match) {
+      return {
+        type: 'videoExtension',
+        raw: match[0],
+        url: match[1],
+        mediaType: 'video'
+      };
+    }
+    
+    const ytRule = /^(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)(?:&[^\s]*)?)(?:\n|$)/;
+    const ytMatch = ytRule.exec(src);
+    if (ytMatch) {
+      return {
+        type: 'videoExtension',
+        raw: ytMatch[0],
+        url: ytMatch[1],
+        videoId: ytMatch[2],
+        mediaType: 'youtube'
+      };
+    }
+    return undefined;
+  },
+  renderer(token: any) {
+    if (token.mediaType === 'video') {
+      return `<video controls class="rounded-lg w-full my-6" src="${token.url}"></video>`;
+    } else if (token.mediaType === 'youtube') {
+      return `<div class="relative w-full my-6" style="padding-top:56.25%"><iframe class="absolute inset-0 w-full h-full rounded-lg" src="https://www.youtube.com/embed/${token.videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+    }
+    return '';
+  }
+};
+marked.use({
+  extensions: [videoExtension],
+  renderer: {
+    image({ href, text }: { href: string, text: string }) {
+      return `<img class="rounded-lg w-full my-6 border border-foreground/10" alt="${text}" src="${href}" loading="lazy" />`;
+    }
+  }
+});
+
 type Params = { slug: string };
 
 export async function generateMetadata({

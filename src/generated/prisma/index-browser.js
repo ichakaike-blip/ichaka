@@ -140,6 +140,7 @@ exports.Prisma.BlogPostScalarFieldEnum = {
   title: 'title',
   slug: 'slug',
   excerpt: 'excerpt',
+  coverImage: 'coverImage',
   content: 'content',
   published: 'published',
   publishedAt: 'publishedAt',

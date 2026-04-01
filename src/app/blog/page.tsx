@@ -51,6 +51,13 @@ export default async function BlogPage() {
               href={`/blog/${post.slug}`}
               className="card block border-black/10 transition hover:border-cyan-400 dark:border-white/10"
             >
+              {post.coverImage && (
+                <img 
+                  src={post.coverImage} 
+                  alt={post.title} 
+                  className="w-full h-48 object-cover rounded-t-lg mb-4" 
+                />
+              )}
               <h2 className="text-xl font-medium">{post.title}</h2>
               {post.excerpt ? <p className="mt-2 muted">{post.excerpt}</p> : null}
             </Link>

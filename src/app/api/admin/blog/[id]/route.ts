@@ -41,7 +41,7 @@ export async function PATCH(
 
   try {
     const body = await req.json();
-    const { title, slug, excerpt, content, published } = body;
+    const { title, slug, excerpt, content, published, coverImage } = body;
     const { id } = await params;
 
     const post = await prisma.blogPost.update({
@@ -50,6 +50,7 @@ export async function PATCH(
         ...(title && { title }),
         ...(slug && { slug }),
         ...(excerpt !== undefined && { excerpt }),
+        ...(coverImage !== undefined && { coverImage }),
         ...(content && { content }),
         ...(published !== undefined && {
           published,

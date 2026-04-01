@@ -33,6 +33,7 @@ export default async function EditBlogPage({
             title: post.title,
             slug: post.slug,
             excerpt: post.excerpt ?? undefined,
+            coverImage: post.coverImage ?? undefined,
             content: post.content,
             published: post.published,
           }}

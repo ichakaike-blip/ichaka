@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { title, slug, excerpt, content, published } = body;
+    const { title, slug, excerpt, content, published, coverImage } = body;
 
     if (!title || !slug || !content) {
       return NextResponse.json(
@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
         title,
         slug,
         excerpt: excerpt || null,
+        coverImage: coverImage || null,
         content,
         published: published === true,
         publishedAt: published === true ? new Date() : null,

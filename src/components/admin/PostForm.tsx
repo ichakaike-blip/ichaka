@@ -10,6 +10,7 @@ interface PostFormProps {
     title: string;
     slug: string;
     excerpt?: string;
+    coverImage?: string;
     content: string;
     published?: boolean;
   };
@@ -27,6 +28,53 @@ export default function PostForm({ initialData }: PostFormProps) {
   });
 
   const parseForPreview = (content: string) => {
+    const videoExtension = {
+      name: 'videoExtension',
+      level: 'block' as const,
+      start(src: string) { return src.match(/^https?:\/\//)?.index; },
+      tokenizer(src: string) {
+        const rule = /^(https?:\/\/[^\s]+?\.(?:mp4|webm|ogg))(?:\n|$)/;
+        const match = rule.exec(src);
+        if (match) {
+          return {
+            type: 'videoExtension',
+            raw: match[0],
+            url: match[1],
+            mediaType: 'video'
+          };
+        }
+        
+        const ytRule = /^(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)(?:&[^\s]*)?)(?:\n|$)/;
+        const ytMatch = ytRule.exec(src);
+        if (ytMatch) {
+          return {
+            type: 'videoExtension',
+            raw: ytMatch[0],
+            url: ytMatch[1],
+            videoId: ytMatch[2],
+            mediaType: 'youtube'
+          };
+        }
+        return undefined;
+      },
+      renderer(token: any) {
+        if (token.mediaType === 'video') {
+          return `<video controls class="rounded-lg w-full my-6" src="${token.url}"></video>`;
+        } else if (token.mediaType === 'youtube') {
+          return `<div class="relative w-full my-6" style="padding-top:56.25%"><iframe class="absolute inset-0 w-full h-full rounded-lg" src="https://www.youtube.com/embed/${token.videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+        }
+        return '';
+      }
+    };
+    marked.use({
+      extensions: [videoExtension],
+      renderer: {
+        image({ href, text }: { href: string, text: string }) {
+          return `<img class="rounded-lg w-full my-6 border border-foreground/10" alt="${text}" src="${href}" loading="lazy" />`;
+        }
+      }
+    });
+
     const withUnderline = content.replace(/\+\+([^+]+)\+\+/g, "<u>$1</u>");
     return marked.parse(withUnderline) as string;
   };
@@ -45,6 +93,7 @@ export default function PostForm({ initialData }: PostFormProps) {
     title: initialData?.title || "",
     slug: initialData?.slug || "",
     excerpt: initialData?.excerpt || "",
+    coverImage: initialData?.coverImage || "",
     content: initialData?.content || "",
     published: initialData?.published ?? false,
   });
@@ -169,6 +218,24 @@ export default function PostForm({ initialData }: PostFormProps) {
       </div>
 
       <div>
+        <label
+          htmlFor="coverImage"
+          className="block text-sm font-medium text-foreground mb-2"
+        >
+          Cover Image URL
+        </label>
+        <input
+          type="text"
+          id="coverImage"
+          name="coverImage"
+          value={formData.coverImage}
+          onChange={handleChange}
+          placeholder="https://example.com/image.jpg"
+          className="w-full px-3 py-2 bg-foreground/5 border border-foreground/10 rounded-lg p-3 text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <div>
         <div className="flex items-center justify-between mb-2">
           <label
             htmlFor="content"
@@ -241,6 +308,9 @@ export default function PostForm({ initialData }: PostFormProps) {
           rows={12}
           className="w-full px-3 py-2 bg-foreground/5 border border-foreground/20 rounded text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500 font-mono text-sm"
         />
+        <p className="text-foreground/40 text-xs mt-1">
+          Tip: embed images with ![alt](url) · embed video with a bare .mp4 or YouTube URL on its own line
+        </p>
       </div>
 
       <div className="flex items-center justify-between rounded border border-foreground/20 bg-foreground/5 px-3 py-2">
