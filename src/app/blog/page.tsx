@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { prisma } from "@/lib/prisma";
 import SubscribeForm from "@/components/SubscribeForm";
+
+/* eslint-disable @next/next/no-img-element */
 
 export const dynamic = "force-dynamic";
 
@@ -68,12 +69,11 @@ export default async function BlogPage() {
               className="card block border-black/10 transition hover:border-cyan-400 dark:border-white/10"
             >
               {post.coverImage && (
-                <Image
+                <img
                   src={post.coverImage}
                   alt={post.title}
-                  width={1200}
-                  height={480}
                   className="mb-4 h-48 w-full rounded-t-lg object-cover"
+                  loading="lazy"
                 />
               )}
               <h2 className="text-xl font-medium">{post.title}</h2>

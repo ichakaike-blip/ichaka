@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { prisma } from "@/lib/prisma";
 import { Reveal } from "@/components/reveal";
 import CommentSection from "@/components/CommentSection";
+
+/* eslint-disable @next/next/no-img-element */
 
 export const dynamic = "force-dynamic";
 
@@ -150,12 +151,11 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
       {post.writer ? (
         <div className="bg-foreground/5 border border-foreground/10 rounded-xl p-6 mt-12 flex gap-4 items-start">
           {post.writer.avatar ? (
-            <Image
+            <img
               src={post.writer.avatar}
               alt={`${post.writer.name} avatar`}
-              width={56}
-              height={56}
               className="w-14 h-14 rounded-full object-cover shrink-0"
+              loading="lazy"
             />
           ) : null}
           <div>
