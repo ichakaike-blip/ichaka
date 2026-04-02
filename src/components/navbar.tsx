@@ -17,9 +17,9 @@ const ThemeToggle = dynamic(
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
+  { href: "/blog", label: "Blog" },
   { href: "/dev-projects", label: "Development" },
   { href: "/content-projects", label: "Content" },
-  { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
 ];
 

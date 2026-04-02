@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const postCount = await prisma.blogPost.count();
+  const pendingSubmissionCount = await prisma.blogPost.count({ where: { status: "pending" } });
   const devCount = await prisma.devProject.count();
   const contentCount = await prisma.contentProject.count();
   const subscriberCount = await prisma.subscriber.count();
@@ -42,11 +43,17 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className="bg-foreground/5 border border-foreground/10 rounded-lg p-6">
           <p className="text-foreground/60 text-sm mb-2">Total Blog Posts</p>
           <p className="text-4xl font-bold text-foreground">{postCount}</p>
         </div>
+        <Link href="/admin/submissions" className="block bg-foreground/5 border border-foreground/10 rounded-lg p-6 border-orange-500/20 hover:border-orange-500/50 transition">
+          <p className="text-orange-500 text-sm mb-2 flex items-center justify-between">
+            Pending Submissions <span>View &rarr;</span>
+          </p>
+          <p className="text-4xl font-bold text-orange-500">{pendingSubmissionCount}</p>
+        </Link>
         <div className="bg-foreground/5 border border-foreground/10 rounded-lg p-6">
           <p className="text-foreground/60 text-sm mb-2">Development Projects</p>
           <p className="text-4xl font-bold text-foreground">{devCount}</p>

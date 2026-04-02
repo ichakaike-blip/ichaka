@@ -38,6 +38,9 @@ model BlogPost {
   coverImage  String?
   content     String
   published   Boolean   @default(false)
+  status      String    @default("published")
+  writerId    String?
+  writer      Writer?   @relation(fields: [writerId], references: [id])
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -45,6 +48,18 @@ model BlogPost {
 
   @@index([slug])
   @@map("blog_posts")
+}
+
+model Writer {
+  id        String     @id @default(cuid())
+  name      String
+  bio       String
+  avatar    String?
+  socials   String
+  createdAt DateTime   @default(now())
+  posts     BlogPost[]
+
+  @@map("writers")
 }
 
 model DevProject {

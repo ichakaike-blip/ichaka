@@ -29,6 +29,11 @@ export type VerificationToken = $Result.DefaultSelection<Prisma.$VerificationTok
  */
 export type BlogPost = $Result.DefaultSelection<Prisma.$BlogPostPayload>
 /**
+ * Model Writer
+ * 
+ */
+export type Writer = $Result.DefaultSelection<Prisma.$WriterPayload>
+/**
  * Model DevProject
  * 
  */
@@ -196,6 +201,16 @@ export class PrismaClient<
     * ```
     */
   get blogPost(): Prisma.BlogPostDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.writer`: Exposes CRUD operations for the **Writer** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Writers
+    * const writers = await prisma.writer.findMany()
+    * ```
+    */
+  get writer(): Prisma.WriterDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.devProject`: Exposes CRUD operations for the **DevProject** model.
@@ -680,6 +695,7 @@ export namespace Prisma {
     User: 'User',
     VerificationToken: 'VerificationToken',
     BlogPost: 'BlogPost',
+    Writer: 'Writer',
     DevProject: 'DevProject',
     ContentProject: 'ContentProject',
     Subscriber: 'Subscriber',
@@ -702,7 +718,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "verificationToken" | "blogPost" | "devProject" | "contentProject" | "subscriber" | "comment"
+      modelProps: "user" | "verificationToken" | "blogPost" | "writer" | "devProject" | "contentProject" | "subscriber" | "comment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -925,6 +941,80 @@ export namespace Prisma {
           count: {
             args: Prisma.BlogPostCountArgs<ExtArgs>
             result: $Utils.Optional<BlogPostCountAggregateOutputType> | number
+          }
+        }
+      }
+      Writer: {
+        payload: Prisma.$WriterPayload<ExtArgs>
+        fields: Prisma.WriterFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WriterFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WriterPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WriterFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WriterPayload>
+          }
+          findFirst: {
+            args: Prisma.WriterFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WriterPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WriterFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WriterPayload>
+          }
+          findMany: {
+            args: Prisma.WriterFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WriterPayload>[]
+          }
+          create: {
+            args: Prisma.WriterCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WriterPayload>
+          }
+          createMany: {
+            args: Prisma.WriterCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WriterCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WriterPayload>[]
+          }
+          delete: {
+            args: Prisma.WriterDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WriterPayload>
+          }
+          update: {
+            args: Prisma.WriterUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WriterPayload>
+          }
+          deleteMany: {
+            args: Prisma.WriterDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WriterUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.WriterUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WriterPayload>[]
+          }
+          upsert: {
+            args: Prisma.WriterUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WriterPayload>
+          }
+          aggregate: {
+            args: Prisma.WriterAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWriter>
+          }
+          groupBy: {
+            args: Prisma.WriterGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WriterGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WriterCountArgs<ExtArgs>
+            result: $Utils.Optional<WriterCountAggregateOutputType> | number
           }
         }
       }
@@ -1323,6 +1413,7 @@ export namespace Prisma {
     user?: UserOmit
     verificationToken?: VerificationTokenOmit
     blogPost?: BlogPostOmit
+    writer?: WriterOmit
     devProject?: DevProjectOmit
     contentProject?: ContentProjectOmit
     subscriber?: SubscriberOmit
@@ -1430,6 +1521,37 @@ export namespace Prisma {
    */
   export type BlogPostCountOutputTypeCountCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CommentWhereInput
+  }
+
+
+  /**
+   * Count Type WriterCountOutputType
+   */
+
+  export type WriterCountOutputType = {
+    posts: number
+  }
+
+  export type WriterCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    posts?: boolean | WriterCountOutputTypeCountPostsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * WriterCountOutputType without action
+   */
+  export type WriterCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WriterCountOutputType
+     */
+    select?: WriterCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * WriterCountOutputType without action
+   */
+  export type WriterCountOutputTypeCountPostsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BlogPostWhereInput
   }
 
 
@@ -3419,6 +3541,8 @@ export namespace Prisma {
     coverImage: string | null
     content: string | null
     published: boolean | null
+    status: string | null
+    writerId: string | null
     publishedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -3432,6 +3556,8 @@ export namespace Prisma {
     coverImage: string | null
     content: string | null
     published: boolean | null
+    status: string | null
+    writerId: string | null
     publishedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -3445,6 +3571,8 @@ export namespace Prisma {
     coverImage: number
     content: number
     published: number
+    status: number
+    writerId: number
     publishedAt: number
     createdAt: number
     updatedAt: number
@@ -3460,6 +3588,8 @@ export namespace Prisma {
     coverImage?: true
     content?: true
     published?: true
+    status?: true
+    writerId?: true
     publishedAt?: true
     createdAt?: true
     updatedAt?: true
@@ -3473,6 +3603,8 @@ export namespace Prisma {
     coverImage?: true
     content?: true
     published?: true
+    status?: true
+    writerId?: true
     publishedAt?: true
     createdAt?: true
     updatedAt?: true
@@ -3486,6 +3618,8 @@ export namespace Prisma {
     coverImage?: true
     content?: true
     published?: true
+    status?: true
+    writerId?: true
     publishedAt?: true
     createdAt?: true
     updatedAt?: true
@@ -3572,6 +3706,8 @@ export namespace Prisma {
     coverImage: string | null
     content: string
     published: boolean
+    status: string
+    writerId: string | null
     publishedAt: Date | null
     createdAt: Date
     updatedAt: Date
@@ -3602,9 +3738,12 @@ export namespace Prisma {
     coverImage?: boolean
     content?: boolean
     published?: boolean
+    status?: boolean
+    writerId?: boolean
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    writer?: boolean | BlogPost$writerArgs<ExtArgs>
     comments?: boolean | BlogPost$commentsArgs<ExtArgs>
     _count?: boolean | BlogPostCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["blogPost"]>
@@ -3617,9 +3756,12 @@ export namespace Prisma {
     coverImage?: boolean
     content?: boolean
     published?: boolean
+    status?: boolean
+    writerId?: boolean
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    writer?: boolean | BlogPost$writerArgs<ExtArgs>
   }, ExtArgs["result"]["blogPost"]>
 
   export type BlogPostSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3630,9 +3772,12 @@ export namespace Prisma {
     coverImage?: boolean
     content?: boolean
     published?: boolean
+    status?: boolean
+    writerId?: boolean
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    writer?: boolean | BlogPost$writerArgs<ExtArgs>
   }, ExtArgs["result"]["blogPost"]>
 
   export type BlogPostSelectScalar = {
@@ -3643,22 +3788,30 @@ export namespace Prisma {
     coverImage?: boolean
     content?: boolean
     published?: boolean
+    status?: boolean
+    writerId?: boolean
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BlogPostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "coverImage" | "content" | "published" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["blogPost"]>
+  export type BlogPostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "coverImage" | "content" | "published" | "status" | "writerId" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["blogPost"]>
   export type BlogPostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    writer?: boolean | BlogPost$writerArgs<ExtArgs>
     comments?: boolean | BlogPost$commentsArgs<ExtArgs>
     _count?: boolean | BlogPostCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type BlogPostIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type BlogPostIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type BlogPostIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    writer?: boolean | BlogPost$writerArgs<ExtArgs>
+  }
+  export type BlogPostIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    writer?: boolean | BlogPost$writerArgs<ExtArgs>
+  }
 
   export type $BlogPostPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "BlogPost"
     objects: {
+      writer: Prisma.$WriterPayload<ExtArgs> | null
       comments: Prisma.$CommentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -3669,6 +3822,8 @@ export namespace Prisma {
       coverImage: string | null
       content: string
       published: boolean
+      status: string
+      writerId: string | null
       publishedAt: Date | null
       createdAt: Date
       updatedAt: Date
@@ -4066,6 +4221,7 @@ export namespace Prisma {
    */
   export interface Prisma__BlogPostClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    writer<T extends BlogPost$writerArgs<ExtArgs> = {}>(args?: Subset<T, BlogPost$writerArgs<ExtArgs>>): Prisma__WriterClient<$Result.GetResult<Prisma.$WriterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     comments<T extends BlogPost$commentsArgs<ExtArgs> = {}>(args?: Subset<T, BlogPost$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -4103,6 +4259,8 @@ export namespace Prisma {
     readonly coverImage: FieldRef<"BlogPost", 'String'>
     readonly content: FieldRef<"BlogPost", 'String'>
     readonly published: FieldRef<"BlogPost", 'Boolean'>
+    readonly status: FieldRef<"BlogPost", 'String'>
+    readonly writerId: FieldRef<"BlogPost", 'String'>
     readonly publishedAt: FieldRef<"BlogPost", 'DateTime'>
     readonly createdAt: FieldRef<"BlogPost", 'DateTime'>
     readonly updatedAt: FieldRef<"BlogPost", 'DateTime'>
@@ -4355,6 +4513,10 @@ export namespace Prisma {
      */
     data: BlogPostCreateManyInput | BlogPostCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4425,6 +4587,10 @@ export namespace Prisma {
      * Limit how many BlogPosts to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4494,6 +4660,25 @@ export namespace Prisma {
   }
 
   /**
+   * BlogPost.writer
+   */
+  export type BlogPost$writerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WriterInclude<ExtArgs> | null
+    where?: WriterWhereInput
+  }
+
+  /**
    * BlogPost.comments
    */
   export type BlogPost$commentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4533,6 +4718,1089 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BlogPostInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Writer
+   */
+
+  export type AggregateWriter = {
+    _count: WriterCountAggregateOutputType | null
+    _min: WriterMinAggregateOutputType | null
+    _max: WriterMaxAggregateOutputType | null
+  }
+
+  export type WriterMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    bio: string | null
+    avatar: string | null
+    socials: string | null
+    createdAt: Date | null
+  }
+
+  export type WriterMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    bio: string | null
+    avatar: string | null
+    socials: string | null
+    createdAt: Date | null
+  }
+
+  export type WriterCountAggregateOutputType = {
+    id: number
+    name: number
+    bio: number
+    avatar: number
+    socials: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type WriterMinAggregateInputType = {
+    id?: true
+    name?: true
+    bio?: true
+    avatar?: true
+    socials?: true
+    createdAt?: true
+  }
+
+  export type WriterMaxAggregateInputType = {
+    id?: true
+    name?: true
+    bio?: true
+    avatar?: true
+    socials?: true
+    createdAt?: true
+  }
+
+  export type WriterCountAggregateInputType = {
+    id?: true
+    name?: true
+    bio?: true
+    avatar?: true
+    socials?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type WriterAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Writer to aggregate.
+     */
+    where?: WriterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Writers to fetch.
+     */
+    orderBy?: WriterOrderByWithRelationInput | WriterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WriterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Writers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Writers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Writers
+    **/
+    _count?: true | WriterCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WriterMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WriterMaxAggregateInputType
+  }
+
+  export type GetWriterAggregateType<T extends WriterAggregateArgs> = {
+        [P in keyof T & keyof AggregateWriter]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWriter[P]>
+      : GetScalarType<T[P], AggregateWriter[P]>
+  }
+
+
+
+
+  export type WriterGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WriterWhereInput
+    orderBy?: WriterOrderByWithAggregationInput | WriterOrderByWithAggregationInput[]
+    by: WriterScalarFieldEnum[] | WriterScalarFieldEnum
+    having?: WriterScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WriterCountAggregateInputType | true
+    _min?: WriterMinAggregateInputType
+    _max?: WriterMaxAggregateInputType
+  }
+
+  export type WriterGroupByOutputType = {
+    id: string
+    name: string
+    bio: string
+    avatar: string | null
+    socials: string
+    createdAt: Date
+    _count: WriterCountAggregateOutputType | null
+    _min: WriterMinAggregateOutputType | null
+    _max: WriterMaxAggregateOutputType | null
+  }
+
+  type GetWriterGroupByPayload<T extends WriterGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WriterGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WriterGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WriterGroupByOutputType[P]>
+            : GetScalarType<T[P], WriterGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WriterSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    bio?: boolean
+    avatar?: boolean
+    socials?: boolean
+    createdAt?: boolean
+    posts?: boolean | Writer$postsArgs<ExtArgs>
+    _count?: boolean | WriterCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["writer"]>
+
+  export type WriterSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    bio?: boolean
+    avatar?: boolean
+    socials?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["writer"]>
+
+  export type WriterSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    bio?: boolean
+    avatar?: boolean
+    socials?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["writer"]>
+
+  export type WriterSelectScalar = {
+    id?: boolean
+    name?: boolean
+    bio?: boolean
+    avatar?: boolean
+    socials?: boolean
+    createdAt?: boolean
+  }
+
+  export type WriterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "bio" | "avatar" | "socials" | "createdAt", ExtArgs["result"]["writer"]>
+  export type WriterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    posts?: boolean | Writer$postsArgs<ExtArgs>
+    _count?: boolean | WriterCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type WriterIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type WriterIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $WriterPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Writer"
+    objects: {
+      posts: Prisma.$BlogPostPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      bio: string
+      avatar: string | null
+      socials: string
+      createdAt: Date
+    }, ExtArgs["result"]["writer"]>
+    composites: {}
+  }
+
+  type WriterGetPayload<S extends boolean | null | undefined | WriterDefaultArgs> = $Result.GetResult<Prisma.$WriterPayload, S>
+
+  type WriterCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<WriterFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: WriterCountAggregateInputType | true
+    }
+
+  export interface WriterDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Writer'], meta: { name: 'Writer' } }
+    /**
+     * Find zero or one Writer that matches the filter.
+     * @param {WriterFindUniqueArgs} args - Arguments to find a Writer
+     * @example
+     * // Get one Writer
+     * const writer = await prisma.writer.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WriterFindUniqueArgs>(args: SelectSubset<T, WriterFindUniqueArgs<ExtArgs>>): Prisma__WriterClient<$Result.GetResult<Prisma.$WriterPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Writer that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {WriterFindUniqueOrThrowArgs} args - Arguments to find a Writer
+     * @example
+     * // Get one Writer
+     * const writer = await prisma.writer.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WriterFindUniqueOrThrowArgs>(args: SelectSubset<T, WriterFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WriterClient<$Result.GetResult<Prisma.$WriterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Writer that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WriterFindFirstArgs} args - Arguments to find a Writer
+     * @example
+     * // Get one Writer
+     * const writer = await prisma.writer.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WriterFindFirstArgs>(args?: SelectSubset<T, WriterFindFirstArgs<ExtArgs>>): Prisma__WriterClient<$Result.GetResult<Prisma.$WriterPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Writer that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WriterFindFirstOrThrowArgs} args - Arguments to find a Writer
+     * @example
+     * // Get one Writer
+     * const writer = await prisma.writer.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WriterFindFirstOrThrowArgs>(args?: SelectSubset<T, WriterFindFirstOrThrowArgs<ExtArgs>>): Prisma__WriterClient<$Result.GetResult<Prisma.$WriterPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Writers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WriterFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Writers
+     * const writers = await prisma.writer.findMany()
+     * 
+     * // Get first 10 Writers
+     * const writers = await prisma.writer.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const writerWithIdOnly = await prisma.writer.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WriterFindManyArgs>(args?: SelectSubset<T, WriterFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WriterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Writer.
+     * @param {WriterCreateArgs} args - Arguments to create a Writer.
+     * @example
+     * // Create one Writer
+     * const Writer = await prisma.writer.create({
+     *   data: {
+     *     // ... data to create a Writer
+     *   }
+     * })
+     * 
+     */
+    create<T extends WriterCreateArgs>(args: SelectSubset<T, WriterCreateArgs<ExtArgs>>): Prisma__WriterClient<$Result.GetResult<Prisma.$WriterPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Writers.
+     * @param {WriterCreateManyArgs} args - Arguments to create many Writers.
+     * @example
+     * // Create many Writers
+     * const writer = await prisma.writer.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WriterCreateManyArgs>(args?: SelectSubset<T, WriterCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Writers and returns the data saved in the database.
+     * @param {WriterCreateManyAndReturnArgs} args - Arguments to create many Writers.
+     * @example
+     * // Create many Writers
+     * const writer = await prisma.writer.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Writers and only return the `id`
+     * const writerWithIdOnly = await prisma.writer.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WriterCreateManyAndReturnArgs>(args?: SelectSubset<T, WriterCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WriterPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Writer.
+     * @param {WriterDeleteArgs} args - Arguments to delete one Writer.
+     * @example
+     * // Delete one Writer
+     * const Writer = await prisma.writer.delete({
+     *   where: {
+     *     // ... filter to delete one Writer
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WriterDeleteArgs>(args: SelectSubset<T, WriterDeleteArgs<ExtArgs>>): Prisma__WriterClient<$Result.GetResult<Prisma.$WriterPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Writer.
+     * @param {WriterUpdateArgs} args - Arguments to update one Writer.
+     * @example
+     * // Update one Writer
+     * const writer = await prisma.writer.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WriterUpdateArgs>(args: SelectSubset<T, WriterUpdateArgs<ExtArgs>>): Prisma__WriterClient<$Result.GetResult<Prisma.$WriterPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Writers.
+     * @param {WriterDeleteManyArgs} args - Arguments to filter Writers to delete.
+     * @example
+     * // Delete a few Writers
+     * const { count } = await prisma.writer.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WriterDeleteManyArgs>(args?: SelectSubset<T, WriterDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Writers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WriterUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Writers
+     * const writer = await prisma.writer.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WriterUpdateManyArgs>(args: SelectSubset<T, WriterUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Writers and returns the data updated in the database.
+     * @param {WriterUpdateManyAndReturnArgs} args - Arguments to update many Writers.
+     * @example
+     * // Update many Writers
+     * const writer = await prisma.writer.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Writers and only return the `id`
+     * const writerWithIdOnly = await prisma.writer.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends WriterUpdateManyAndReturnArgs>(args: SelectSubset<T, WriterUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WriterPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Writer.
+     * @param {WriterUpsertArgs} args - Arguments to update or create a Writer.
+     * @example
+     * // Update or create a Writer
+     * const writer = await prisma.writer.upsert({
+     *   create: {
+     *     // ... data to create a Writer
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Writer we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WriterUpsertArgs>(args: SelectSubset<T, WriterUpsertArgs<ExtArgs>>): Prisma__WriterClient<$Result.GetResult<Prisma.$WriterPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Writers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WriterCountArgs} args - Arguments to filter Writers to count.
+     * @example
+     * // Count the number of Writers
+     * const count = await prisma.writer.count({
+     *   where: {
+     *     // ... the filter for the Writers we want to count
+     *   }
+     * })
+    **/
+    count<T extends WriterCountArgs>(
+      args?: Subset<T, WriterCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WriterCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Writer.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WriterAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WriterAggregateArgs>(args: Subset<T, WriterAggregateArgs>): Prisma.PrismaPromise<GetWriterAggregateType<T>>
+
+    /**
+     * Group by Writer.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WriterGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WriterGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WriterGroupByArgs['orderBy'] }
+        : { orderBy?: WriterGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WriterGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWriterGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Writer model
+   */
+  readonly fields: WriterFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Writer.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WriterClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    posts<T extends Writer$postsArgs<ExtArgs> = {}>(args?: Subset<T, Writer$postsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlogPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Writer model
+   */
+  interface WriterFieldRefs {
+    readonly id: FieldRef<"Writer", 'String'>
+    readonly name: FieldRef<"Writer", 'String'>
+    readonly bio: FieldRef<"Writer", 'String'>
+    readonly avatar: FieldRef<"Writer", 'String'>
+    readonly socials: FieldRef<"Writer", 'String'>
+    readonly createdAt: FieldRef<"Writer", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Writer findUnique
+   */
+  export type WriterFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WriterInclude<ExtArgs> | null
+    /**
+     * Filter, which Writer to fetch.
+     */
+    where: WriterWhereUniqueInput
+  }
+
+  /**
+   * Writer findUniqueOrThrow
+   */
+  export type WriterFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WriterInclude<ExtArgs> | null
+    /**
+     * Filter, which Writer to fetch.
+     */
+    where: WriterWhereUniqueInput
+  }
+
+  /**
+   * Writer findFirst
+   */
+  export type WriterFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WriterInclude<ExtArgs> | null
+    /**
+     * Filter, which Writer to fetch.
+     */
+    where?: WriterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Writers to fetch.
+     */
+    orderBy?: WriterOrderByWithRelationInput | WriterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Writers.
+     */
+    cursor?: WriterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Writers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Writers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Writers.
+     */
+    distinct?: WriterScalarFieldEnum | WriterScalarFieldEnum[]
+  }
+
+  /**
+   * Writer findFirstOrThrow
+   */
+  export type WriterFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WriterInclude<ExtArgs> | null
+    /**
+     * Filter, which Writer to fetch.
+     */
+    where?: WriterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Writers to fetch.
+     */
+    orderBy?: WriterOrderByWithRelationInput | WriterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Writers.
+     */
+    cursor?: WriterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Writers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Writers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Writers.
+     */
+    distinct?: WriterScalarFieldEnum | WriterScalarFieldEnum[]
+  }
+
+  /**
+   * Writer findMany
+   */
+  export type WriterFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WriterInclude<ExtArgs> | null
+    /**
+     * Filter, which Writers to fetch.
+     */
+    where?: WriterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Writers to fetch.
+     */
+    orderBy?: WriterOrderByWithRelationInput | WriterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Writers.
+     */
+    cursor?: WriterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Writers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Writers.
+     */
+    skip?: number
+    distinct?: WriterScalarFieldEnum | WriterScalarFieldEnum[]
+  }
+
+  /**
+   * Writer create
+   */
+  export type WriterCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WriterInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Writer.
+     */
+    data: XOR<WriterCreateInput, WriterUncheckedCreateInput>
+  }
+
+  /**
+   * Writer createMany
+   */
+  export type WriterCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Writers.
+     */
+    data: WriterCreateManyInput | WriterCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Writer createManyAndReturn
+   */
+  export type WriterCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * The data used to create many Writers.
+     */
+    data: WriterCreateManyInput | WriterCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Writer update
+   */
+  export type WriterUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WriterInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Writer.
+     */
+    data: XOR<WriterUpdateInput, WriterUncheckedUpdateInput>
+    /**
+     * Choose, which Writer to update.
+     */
+    where: WriterWhereUniqueInput
+  }
+
+  /**
+   * Writer updateMany
+   */
+  export type WriterUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Writers.
+     */
+    data: XOR<WriterUpdateManyMutationInput, WriterUncheckedUpdateManyInput>
+    /**
+     * Filter which Writers to update
+     */
+    where?: WriterWhereInput
+    /**
+     * Limit how many Writers to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Writer updateManyAndReturn
+   */
+  export type WriterUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * The data used to update Writers.
+     */
+    data: XOR<WriterUpdateManyMutationInput, WriterUncheckedUpdateManyInput>
+    /**
+     * Filter which Writers to update
+     */
+    where?: WriterWhereInput
+    /**
+     * Limit how many Writers to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Writer upsert
+   */
+  export type WriterUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WriterInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Writer to update in case it exists.
+     */
+    where: WriterWhereUniqueInput
+    /**
+     * In case the Writer found by the `where` argument doesn't exist, create a new Writer with this data.
+     */
+    create: XOR<WriterCreateInput, WriterUncheckedCreateInput>
+    /**
+     * In case the Writer was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WriterUpdateInput, WriterUncheckedUpdateInput>
+  }
+
+  /**
+   * Writer delete
+   */
+  export type WriterDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WriterInclude<ExtArgs> | null
+    /**
+     * Filter which Writer to delete.
+     */
+    where: WriterWhereUniqueInput
+  }
+
+  /**
+   * Writer deleteMany
+   */
+  export type WriterDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Writers to delete
+     */
+    where?: WriterWhereInput
+    /**
+     * Limit how many Writers to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Writer.posts
+   */
+  export type Writer$postsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlogPost
+     */
+    select?: BlogPostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlogPost
+     */
+    omit?: BlogPostOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlogPostInclude<ExtArgs> | null
+    where?: BlogPostWhereInput
+    orderBy?: BlogPostOrderByWithRelationInput | BlogPostOrderByWithRelationInput[]
+    cursor?: BlogPostWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BlogPostScalarFieldEnum | BlogPostScalarFieldEnum[]
+  }
+
+  /**
+   * Writer without action
+   */
+  export type WriterDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Writer
+     */
+    select?: WriterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Writer
+     */
+    omit?: WriterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WriterInclude<ExtArgs> | null
   }
 
 
@@ -8793,12 +10061,26 @@ export namespace Prisma {
     coverImage: 'coverImage',
     content: 'content',
     published: 'published',
+    status: 'status',
+    writerId: 'writerId',
     publishedAt: 'publishedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type BlogPostScalarFieldEnum = (typeof BlogPostScalarFieldEnum)[keyof typeof BlogPostScalarFieldEnum]
+
+
+  export const WriterScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    bio: 'bio',
+    avatar: 'avatar',
+    socials: 'socials',
+    createdAt: 'createdAt'
+  };
+
+  export type WriterScalarFieldEnum = (typeof WriterScalarFieldEnum)[keyof typeof WriterScalarFieldEnum]
 
 
   export const DevProjectScalarFieldEnum: {
@@ -9054,9 +10336,12 @@ export namespace Prisma {
     coverImage?: StringNullableFilter<"BlogPost"> | string | null
     content?: StringFilter<"BlogPost"> | string
     published?: BoolFilter<"BlogPost"> | boolean
+    status?: StringFilter<"BlogPost"> | string
+    writerId?: StringNullableFilter<"BlogPost"> | string | null
     publishedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
     createdAt?: DateTimeFilter<"BlogPost"> | Date | string
     updatedAt?: DateTimeFilter<"BlogPost"> | Date | string
+    writer?: XOR<WriterNullableScalarRelationFilter, WriterWhereInput> | null
     comments?: CommentListRelationFilter
   }
 
@@ -9068,9 +10353,12 @@ export namespace Prisma {
     coverImage?: SortOrderInput | SortOrder
     content?: SortOrder
     published?: SortOrder
+    status?: SortOrder
+    writerId?: SortOrderInput | SortOrder
     publishedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    writer?: WriterOrderByWithRelationInput
     comments?: CommentOrderByRelationAggregateInput
   }
 
@@ -9085,9 +10373,12 @@ export namespace Prisma {
     coverImage?: StringNullableFilter<"BlogPost"> | string | null
     content?: StringFilter<"BlogPost"> | string
     published?: BoolFilter<"BlogPost"> | boolean
+    status?: StringFilter<"BlogPost"> | string
+    writerId?: StringNullableFilter<"BlogPost"> | string | null
     publishedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
     createdAt?: DateTimeFilter<"BlogPost"> | Date | string
     updatedAt?: DateTimeFilter<"BlogPost"> | Date | string
+    writer?: XOR<WriterNullableScalarRelationFilter, WriterWhereInput> | null
     comments?: CommentListRelationFilter
   }, "id" | "slug">
 
@@ -9099,6 +10390,8 @@ export namespace Prisma {
     coverImage?: SortOrderInput | SortOrder
     content?: SortOrder
     published?: SortOrder
+    status?: SortOrder
+    writerId?: SortOrderInput | SortOrder
     publishedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -9118,9 +10411,71 @@ export namespace Prisma {
     coverImage?: StringNullableWithAggregatesFilter<"BlogPost"> | string | null
     content?: StringWithAggregatesFilter<"BlogPost"> | string
     published?: BoolWithAggregatesFilter<"BlogPost"> | boolean
+    status?: StringWithAggregatesFilter<"BlogPost"> | string
+    writerId?: StringNullableWithAggregatesFilter<"BlogPost"> | string | null
     publishedAt?: DateTimeNullableWithAggregatesFilter<"BlogPost"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
+  }
+
+  export type WriterWhereInput = {
+    AND?: WriterWhereInput | WriterWhereInput[]
+    OR?: WriterWhereInput[]
+    NOT?: WriterWhereInput | WriterWhereInput[]
+    id?: StringFilter<"Writer"> | string
+    name?: StringFilter<"Writer"> | string
+    bio?: StringFilter<"Writer"> | string
+    avatar?: StringNullableFilter<"Writer"> | string | null
+    socials?: StringFilter<"Writer"> | string
+    createdAt?: DateTimeFilter<"Writer"> | Date | string
+    posts?: BlogPostListRelationFilter
+  }
+
+  export type WriterOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    bio?: SortOrder
+    avatar?: SortOrderInput | SortOrder
+    socials?: SortOrder
+    createdAt?: SortOrder
+    posts?: BlogPostOrderByRelationAggregateInput
+  }
+
+  export type WriterWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: WriterWhereInput | WriterWhereInput[]
+    OR?: WriterWhereInput[]
+    NOT?: WriterWhereInput | WriterWhereInput[]
+    name?: StringFilter<"Writer"> | string
+    bio?: StringFilter<"Writer"> | string
+    avatar?: StringNullableFilter<"Writer"> | string | null
+    socials?: StringFilter<"Writer"> | string
+    createdAt?: DateTimeFilter<"Writer"> | Date | string
+    posts?: BlogPostListRelationFilter
+  }, "id">
+
+  export type WriterOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    bio?: SortOrder
+    avatar?: SortOrderInput | SortOrder
+    socials?: SortOrder
+    createdAt?: SortOrder
+    _count?: WriterCountOrderByAggregateInput
+    _max?: WriterMaxOrderByAggregateInput
+    _min?: WriterMinOrderByAggregateInput
+  }
+
+  export type WriterScalarWhereWithAggregatesInput = {
+    AND?: WriterScalarWhereWithAggregatesInput | WriterScalarWhereWithAggregatesInput[]
+    OR?: WriterScalarWhereWithAggregatesInput[]
+    NOT?: WriterScalarWhereWithAggregatesInput | WriterScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Writer"> | string
+    name?: StringWithAggregatesFilter<"Writer"> | string
+    bio?: StringWithAggregatesFilter<"Writer"> | string
+    avatar?: StringNullableWithAggregatesFilter<"Writer"> | string | null
+    socials?: StringWithAggregatesFilter<"Writer"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Writer"> | Date | string
   }
 
   export type DevProjectWhereInput = {
@@ -9484,9 +10839,11 @@ export namespace Prisma {
     coverImage?: string | null
     content: string
     published?: boolean
+    status?: string
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    writer?: WriterCreateNestedOneWithoutPostsInput
     comments?: CommentCreateNestedManyWithoutPostInput
   }
 
@@ -9498,6 +10855,8 @@ export namespace Prisma {
     coverImage?: string | null
     content: string
     published?: boolean
+    status?: string
+    writerId?: string | null
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9512,9 +10871,11 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     published?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    writer?: WriterUpdateOneWithoutPostsNestedInput
     comments?: CommentUpdateManyWithoutPostNestedInput
   }
 
@@ -9526,6 +10887,8 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     published?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
+    writerId?: NullableStringFieldUpdateOperationsInput | string | null
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9540,6 +10903,8 @@ export namespace Prisma {
     coverImage?: string | null
     content: string
     published?: boolean
+    status?: string
+    writerId?: string | null
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9553,6 +10918,7 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     published?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9566,9 +10932,78 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     published?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
+    writerId?: NullableStringFieldUpdateOperationsInput | string | null
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WriterCreateInput = {
+    id?: string
+    name: string
+    bio: string
+    avatar?: string | null
+    socials: string
+    createdAt?: Date | string
+    posts?: BlogPostCreateNestedManyWithoutWriterInput
+  }
+
+  export type WriterUncheckedCreateInput = {
+    id?: string
+    name: string
+    bio: string
+    avatar?: string | null
+    socials: string
+    createdAt?: Date | string
+    posts?: BlogPostUncheckedCreateNestedManyWithoutWriterInput
+  }
+
+  export type WriterUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    bio?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    socials?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    posts?: BlogPostUpdateManyWithoutWriterNestedInput
+  }
+
+  export type WriterUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    bio?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    socials?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    posts?: BlogPostUncheckedUpdateManyWithoutWriterNestedInput
+  }
+
+  export type WriterCreateManyInput = {
+    id?: string
+    name: string
+    bio: string
+    avatar?: string | null
+    socials: string
+    createdAt?: Date | string
+  }
+
+  export type WriterUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    bio?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    socials?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WriterUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    bio?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    socials?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type DevProjectCreateInput = {
@@ -10005,6 +11440,11 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type WriterNullableScalarRelationFilter = {
+    is?: WriterWhereInput | null
+    isNot?: WriterWhereInput | null
+  }
+
   export type CommentListRelationFilter = {
     every?: CommentWhereInput
     some?: CommentWhereInput
@@ -10023,6 +11463,8 @@ export namespace Prisma {
     coverImage?: SortOrder
     content?: SortOrder
     published?: SortOrder
+    status?: SortOrder
+    writerId?: SortOrder
     publishedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10036,6 +11478,8 @@ export namespace Prisma {
     coverImage?: SortOrder
     content?: SortOrder
     published?: SortOrder
+    status?: SortOrder
+    writerId?: SortOrder
     publishedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10049,6 +11493,8 @@ export namespace Prisma {
     coverImage?: SortOrder
     content?: SortOrder
     published?: SortOrder
+    status?: SortOrder
+    writerId?: SortOrder
     publishedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10078,6 +11524,43 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type BlogPostListRelationFilter = {
+    every?: BlogPostWhereInput
+    some?: BlogPostWhereInput
+    none?: BlogPostWhereInput
+  }
+
+  export type BlogPostOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type WriterCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    bio?: SortOrder
+    avatar?: SortOrder
+    socials?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WriterMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    bio?: SortOrder
+    avatar?: SortOrder
+    socials?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WriterMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    bio?: SortOrder
+    avatar?: SortOrder
+    socials?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -10260,6 +11743,12 @@ export namespace Prisma {
     set?: Date | string
   }
 
+  export type WriterCreateNestedOneWithoutPostsInput = {
+    create?: XOR<WriterCreateWithoutPostsInput, WriterUncheckedCreateWithoutPostsInput>
+    connectOrCreate?: WriterCreateOrConnectWithoutPostsInput
+    connect?: WriterWhereUniqueInput
+  }
+
   export type CommentCreateNestedManyWithoutPostInput = {
     create?: XOR<CommentCreateWithoutPostInput, CommentUncheckedCreateWithoutPostInput> | CommentCreateWithoutPostInput[] | CommentUncheckedCreateWithoutPostInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutPostInput | CommentCreateOrConnectWithoutPostInput[]
@@ -10280,6 +11769,16 @@ export namespace Prisma {
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
+  }
+
+  export type WriterUpdateOneWithoutPostsNestedInput = {
+    create?: XOR<WriterCreateWithoutPostsInput, WriterUncheckedCreateWithoutPostsInput>
+    connectOrCreate?: WriterCreateOrConnectWithoutPostsInput
+    upsert?: WriterUpsertWithoutPostsInput
+    disconnect?: WriterWhereInput | boolean
+    delete?: WriterWhereInput | boolean
+    connect?: WriterWhereUniqueInput
+    update?: XOR<XOR<WriterUpdateToOneWithWhereWithoutPostsInput, WriterUpdateWithoutPostsInput>, WriterUncheckedUpdateWithoutPostsInput>
   }
 
   export type CommentUpdateManyWithoutPostNestedInput = {
@@ -10308,6 +11807,48 @@ export namespace Prisma {
     update?: CommentUpdateWithWhereUniqueWithoutPostInput | CommentUpdateWithWhereUniqueWithoutPostInput[]
     updateMany?: CommentUpdateManyWithWhereWithoutPostInput | CommentUpdateManyWithWhereWithoutPostInput[]
     deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
+  }
+
+  export type BlogPostCreateNestedManyWithoutWriterInput = {
+    create?: XOR<BlogPostCreateWithoutWriterInput, BlogPostUncheckedCreateWithoutWriterInput> | BlogPostCreateWithoutWriterInput[] | BlogPostUncheckedCreateWithoutWriterInput[]
+    connectOrCreate?: BlogPostCreateOrConnectWithoutWriterInput | BlogPostCreateOrConnectWithoutWriterInput[]
+    createMany?: BlogPostCreateManyWriterInputEnvelope
+    connect?: BlogPostWhereUniqueInput | BlogPostWhereUniqueInput[]
+  }
+
+  export type BlogPostUncheckedCreateNestedManyWithoutWriterInput = {
+    create?: XOR<BlogPostCreateWithoutWriterInput, BlogPostUncheckedCreateWithoutWriterInput> | BlogPostCreateWithoutWriterInput[] | BlogPostUncheckedCreateWithoutWriterInput[]
+    connectOrCreate?: BlogPostCreateOrConnectWithoutWriterInput | BlogPostCreateOrConnectWithoutWriterInput[]
+    createMany?: BlogPostCreateManyWriterInputEnvelope
+    connect?: BlogPostWhereUniqueInput | BlogPostWhereUniqueInput[]
+  }
+
+  export type BlogPostUpdateManyWithoutWriterNestedInput = {
+    create?: XOR<BlogPostCreateWithoutWriterInput, BlogPostUncheckedCreateWithoutWriterInput> | BlogPostCreateWithoutWriterInput[] | BlogPostUncheckedCreateWithoutWriterInput[]
+    connectOrCreate?: BlogPostCreateOrConnectWithoutWriterInput | BlogPostCreateOrConnectWithoutWriterInput[]
+    upsert?: BlogPostUpsertWithWhereUniqueWithoutWriterInput | BlogPostUpsertWithWhereUniqueWithoutWriterInput[]
+    createMany?: BlogPostCreateManyWriterInputEnvelope
+    set?: BlogPostWhereUniqueInput | BlogPostWhereUniqueInput[]
+    disconnect?: BlogPostWhereUniqueInput | BlogPostWhereUniqueInput[]
+    delete?: BlogPostWhereUniqueInput | BlogPostWhereUniqueInput[]
+    connect?: BlogPostWhereUniqueInput | BlogPostWhereUniqueInput[]
+    update?: BlogPostUpdateWithWhereUniqueWithoutWriterInput | BlogPostUpdateWithWhereUniqueWithoutWriterInput[]
+    updateMany?: BlogPostUpdateManyWithWhereWithoutWriterInput | BlogPostUpdateManyWithWhereWithoutWriterInput[]
+    deleteMany?: BlogPostScalarWhereInput | BlogPostScalarWhereInput[]
+  }
+
+  export type BlogPostUncheckedUpdateManyWithoutWriterNestedInput = {
+    create?: XOR<BlogPostCreateWithoutWriterInput, BlogPostUncheckedCreateWithoutWriterInput> | BlogPostCreateWithoutWriterInput[] | BlogPostUncheckedCreateWithoutWriterInput[]
+    connectOrCreate?: BlogPostCreateOrConnectWithoutWriterInput | BlogPostCreateOrConnectWithoutWriterInput[]
+    upsert?: BlogPostUpsertWithWhereUniqueWithoutWriterInput | BlogPostUpsertWithWhereUniqueWithoutWriterInput[]
+    createMany?: BlogPostCreateManyWriterInputEnvelope
+    set?: BlogPostWhereUniqueInput | BlogPostWhereUniqueInput[]
+    disconnect?: BlogPostWhereUniqueInput | BlogPostWhereUniqueInput[]
+    delete?: BlogPostWhereUniqueInput | BlogPostWhereUniqueInput[]
+    connect?: BlogPostWhereUniqueInput | BlogPostWhereUniqueInput[]
+    update?: BlogPostUpdateWithWhereUniqueWithoutWriterInput | BlogPostUpdateWithWhereUniqueWithoutWriterInput[]
+    updateMany?: BlogPostUpdateManyWithWhereWithoutWriterInput | BlogPostUpdateManyWithWhereWithoutWriterInput[]
+    deleteMany?: BlogPostScalarWhereInput | BlogPostScalarWhereInput[]
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -10506,6 +12047,29 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type WriterCreateWithoutPostsInput = {
+    id?: string
+    name: string
+    bio: string
+    avatar?: string | null
+    socials: string
+    createdAt?: Date | string
+  }
+
+  export type WriterUncheckedCreateWithoutPostsInput = {
+    id?: string
+    name: string
+    bio: string
+    avatar?: string | null
+    socials: string
+    createdAt?: Date | string
+  }
+
+  export type WriterCreateOrConnectWithoutPostsInput = {
+    where: WriterWhereUniqueInput
+    create: XOR<WriterCreateWithoutPostsInput, WriterUncheckedCreateWithoutPostsInput>
+  }
+
   export type CommentCreateWithoutPostInput = {
     id?: string
     name: string
@@ -10528,6 +12092,35 @@ export namespace Prisma {
   export type CommentCreateManyPostInputEnvelope = {
     data: CommentCreateManyPostInput | CommentCreateManyPostInput[]
     skipDuplicates?: boolean
+  }
+
+  export type WriterUpsertWithoutPostsInput = {
+    update: XOR<WriterUpdateWithoutPostsInput, WriterUncheckedUpdateWithoutPostsInput>
+    create: XOR<WriterCreateWithoutPostsInput, WriterUncheckedCreateWithoutPostsInput>
+    where?: WriterWhereInput
+  }
+
+  export type WriterUpdateToOneWithWhereWithoutPostsInput = {
+    where?: WriterWhereInput
+    data: XOR<WriterUpdateWithoutPostsInput, WriterUncheckedUpdateWithoutPostsInput>
+  }
+
+  export type WriterUpdateWithoutPostsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    bio?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    socials?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WriterUncheckedUpdateWithoutPostsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    bio?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    socials?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CommentUpsertWithWhereUniqueWithoutPostInput = {
@@ -10557,6 +12150,80 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Comment"> | Date | string
   }
 
+  export type BlogPostCreateWithoutWriterInput = {
+    id?: string
+    title: string
+    slug: string
+    excerpt?: string | null
+    coverImage?: string | null
+    content: string
+    published?: boolean
+    status?: string
+    publishedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    comments?: CommentCreateNestedManyWithoutPostInput
+  }
+
+  export type BlogPostUncheckedCreateWithoutWriterInput = {
+    id?: string
+    title: string
+    slug: string
+    excerpt?: string | null
+    coverImage?: string | null
+    content: string
+    published?: boolean
+    status?: string
+    publishedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    comments?: CommentUncheckedCreateNestedManyWithoutPostInput
+  }
+
+  export type BlogPostCreateOrConnectWithoutWriterInput = {
+    where: BlogPostWhereUniqueInput
+    create: XOR<BlogPostCreateWithoutWriterInput, BlogPostUncheckedCreateWithoutWriterInput>
+  }
+
+  export type BlogPostCreateManyWriterInputEnvelope = {
+    data: BlogPostCreateManyWriterInput | BlogPostCreateManyWriterInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BlogPostUpsertWithWhereUniqueWithoutWriterInput = {
+    where: BlogPostWhereUniqueInput
+    update: XOR<BlogPostUpdateWithoutWriterInput, BlogPostUncheckedUpdateWithoutWriterInput>
+    create: XOR<BlogPostCreateWithoutWriterInput, BlogPostUncheckedCreateWithoutWriterInput>
+  }
+
+  export type BlogPostUpdateWithWhereUniqueWithoutWriterInput = {
+    where: BlogPostWhereUniqueInput
+    data: XOR<BlogPostUpdateWithoutWriterInput, BlogPostUncheckedUpdateWithoutWriterInput>
+  }
+
+  export type BlogPostUpdateManyWithWhereWithoutWriterInput = {
+    where: BlogPostScalarWhereInput
+    data: XOR<BlogPostUpdateManyMutationInput, BlogPostUncheckedUpdateManyWithoutWriterInput>
+  }
+
+  export type BlogPostScalarWhereInput = {
+    AND?: BlogPostScalarWhereInput | BlogPostScalarWhereInput[]
+    OR?: BlogPostScalarWhereInput[]
+    NOT?: BlogPostScalarWhereInput | BlogPostScalarWhereInput[]
+    id?: StringFilter<"BlogPost"> | string
+    title?: StringFilter<"BlogPost"> | string
+    slug?: StringFilter<"BlogPost"> | string
+    excerpt?: StringNullableFilter<"BlogPost"> | string | null
+    coverImage?: StringNullableFilter<"BlogPost"> | string | null
+    content?: StringFilter<"BlogPost"> | string
+    published?: BoolFilter<"BlogPost"> | boolean
+    status?: StringFilter<"BlogPost"> | string
+    writerId?: StringNullableFilter<"BlogPost"> | string | null
+    publishedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
+    createdAt?: DateTimeFilter<"BlogPost"> | Date | string
+    updatedAt?: DateTimeFilter<"BlogPost"> | Date | string
+  }
+
   export type BlogPostCreateWithoutCommentsInput = {
     id?: string
     title: string
@@ -10565,9 +12232,11 @@ export namespace Prisma {
     coverImage?: string | null
     content: string
     published?: boolean
+    status?: string
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    writer?: WriterCreateNestedOneWithoutPostsInput
   }
 
   export type BlogPostUncheckedCreateWithoutCommentsInput = {
@@ -10578,6 +12247,8 @@ export namespace Prisma {
     coverImage?: string | null
     content: string
     published?: boolean
+    status?: string
+    writerId?: string | null
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10607,9 +12278,11 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     published?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    writer?: WriterUpdateOneWithoutPostsNestedInput
   }
 
   export type BlogPostUncheckedUpdateWithoutCommentsInput = {
@@ -10620,6 +12293,8 @@ export namespace Prisma {
     coverImage?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     published?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
+    writerId?: NullableStringFieldUpdateOperationsInput | string | null
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10651,6 +12326,64 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlogPostCreateManyWriterInput = {
+    id?: string
+    title: string
+    slug: string
+    excerpt?: string | null
+    coverImage?: string | null
+    content: string
+    published?: boolean
+    status?: string
+    publishedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BlogPostUpdateWithoutWriterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImage?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comments?: CommentUpdateManyWithoutPostNestedInput
+  }
+
+  export type BlogPostUncheckedUpdateWithoutWriterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImage?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comments?: CommentUncheckedUpdateManyWithoutPostNestedInput
+  }
+
+  export type BlogPostUncheckedUpdateManyWithoutWriterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImage?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    published?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

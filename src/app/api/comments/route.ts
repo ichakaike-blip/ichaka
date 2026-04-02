@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       },
     });
     return NextResponse.json(comment, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to post comment" }, { status: 500 });
   }
 }

@@ -4,6 +4,12 @@ import { marked } from "marked";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+type VideoToken = {
+  mediaType?: "video" | "youtube";
+  url?: string;
+  videoId?: string;
+};
+
 interface PostFormProps {
   initialData?: {
     id: string;
@@ -57,7 +63,7 @@ export default function PostForm({ initialData }: PostFormProps) {
         }
         return undefined;
       },
-      renderer(token: any) {
+      renderer(token: VideoToken) {
         if (token.mediaType === 'video') {
           return `<video controls class="rounded-lg w-full my-6" src="${token.url}"></video>`;
         } else if (token.mediaType === 'youtube') {

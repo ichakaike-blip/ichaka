@@ -37,6 +37,7 @@ export default async function AdminLayout({
         <nav className="space-y-1 px-3 py-6">
           <NavLink href="/admin/dashboard" label="Dashboard" />
           <NavLink href="/admin/blog" label="Blog Posts" />
+          <NavLink href="/admin/submissions" label="Submissions" />
           <NavLink href="/admin/dev-projects" label="Development" />
           <NavLink href="/admin/content-projects" label="Content" />
         </nav>

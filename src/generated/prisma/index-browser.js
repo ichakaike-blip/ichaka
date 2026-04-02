@@ -143,9 +143,20 @@ exports.Prisma.BlogPostScalarFieldEnum = {
   coverImage: 'coverImage',
   content: 'content',
   published: 'published',
+  status: 'status',
+  writerId: 'writerId',
   publishedAt: 'publishedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WriterScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  bio: 'bio',
+  avatar: 'avatar',
+  socials: 'socials',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.DevProjectScalarFieldEnum = {
@@ -208,6 +219,7 @@ exports.Prisma.ModelName = {
   User: 'User',
   VerificationToken: 'VerificationToken',
   BlogPost: 'BlogPost',
+  Writer: 'Writer',
   DevProject: 'DevProject',
   ContentProject: 'ContentProject',
   Subscriber: 'Subscriber',
