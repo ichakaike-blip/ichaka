@@ -18,13 +18,21 @@ interface CommentSectionProps {
 interface CommentItemProps {
   comment: Comment;
   postId: string;
-  onReplySubmit: (parentCommentId: string, name: string, body: string) => Promise<void>;
+  onReplySubmit: (
+    parentCommentId: string,
+    name: string,
+    body: string,
+    email?: string,
+    notifyOnReply?: boolean
+  ) => Promise<void>;
   depth?: number;
 }
 
 function CommentItem({ comment, postId, onReplySubmit, depth = 0 }: CommentItemProps) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyName, setReplyName] = useState("");
+  const [replyEmail, setReplyEmail] = useState("");
+  const [replyNotifyOnReply, setReplyNotifyOnReply] = useState(false);
   const [replyBody, setReplyBody] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [replyError, setReplyError] = useState("");
@@ -35,8 +43,10 @@ function CommentItem({ comment, postId, onReplySubmit, depth = 0 }: CommentItemP
     setIsSubmitting(true);
 
     try {
-      await onReplySubmit(comment.id, replyName, replyBody);
+      await onReplySubmit(comment.id, replyName, replyBody, replyEmail, replyNotifyOnReply);
       setReplyName("");
+      setReplyEmail("");
+      setReplyNotifyOnReply(false);
       setReplyBody("");
       setShowReplyForm(false);
     } catch (err) {
@@ -50,7 +60,7 @@ function CommentItem({ comment, postId, onReplySubmit, depth = 0 }: CommentItemP
 
   return (
     <div className={`space-y-3 ${marginLeft}`}>
-      <div className="card border-black/10 dark:border-white/10 p-4 space-y-2">
+      <div id={`comment-${comment.id}`} className="card border-black/10 dark:border-white/10 p-4 space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="font-medium text-sm">{comment.name}</span>
@@ -100,6 +110,25 @@ function CommentItem({ comment, postId, onReplySubmit, depth = 0 }: CommentItemP
                 className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/20 bg-transparent text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500 text-sm resize-none"
               />
             </div>
+            <div>
+              <label className="block text-xs font-medium mb-1">Email (optional)</label>
+              <input
+                type="email"
+                value={replyEmail}
+                onChange={(e) => setReplyEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/20 bg-transparent text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500 text-sm"
+              />
+            </div>
+            <label className="flex items-center gap-2 text-xs text-foreground/80">
+              <input
+                type="checkbox"
+                checked={replyNotifyOnReply}
+                onChange={(e) => setReplyNotifyOnReply(e.target.checked)}
+                className="h-4 w-4 rounded border-black/20"
+              />
+              Notify me of replies to my comment
+            </label>
             <button
               type="submit"
               disabled={isSubmitting}
@@ -132,6 +161,8 @@ function CommentItem({ comment, postId, onReplySubmit, depth = 0 }: CommentItemP
 export default function CommentSection({ postId, initialComments }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [notifyOnReply, setNotifyOnReply] = useState(false);
   const [body, setBody] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [error, setError] = useState("");
@@ -163,7 +194,7 @@ export default function CommentSection({ postId, initialComments }: CommentSecti
       const res = await fetch("/api/comments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ postId, name, body }),
+        body: JSON.stringify({ postId, name, email, notifyOnReply, body }),
       });
 
       const data = await res.json();
@@ -176,6 +207,8 @@ export default function CommentSection({ postId, initialComments }: CommentSecti
 
       setComments((prev) => [...prev, { ...data, replies: [] }]);
       setName("");
+      setEmail("");
+      setNotifyOnReply(false);
       setBody("");
       setStatus("idle");
     } catch (err) {
@@ -184,11 +217,24 @@ export default function CommentSection({ postId, initialComments }: CommentSecti
     }
   };
 
-  const handleReplySubmit = async (parentCommentId: string, replyName: string, replyBody: string) => {
+  const handleReplySubmit = async (
+    parentCommentId: string,
+    replyName: string,
+    replyBody: string,
+    replyEmail?: string,
+    replyNotifyOnReply?: boolean
+  ) => {
     const res = await fetch("/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ postId, parentCommentId, name: replyName, body: replyBody }),
+      body: JSON.stringify({
+        postId,
+        parentCommentId,
+        name: replyName,
+        email: replyEmail,
+        notifyOnReply: replyNotifyOnReply,
+        body: replyBody,
+      }),
     });
 
     const data = await res.json();
@@ -265,6 +311,25 @@ export default function CommentSection({ postId, initialComments }: CommentSecti
               className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/20 bg-transparent text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500 text-sm resize-none"
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Email (optional)</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/20 bg-transparent text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500 text-sm"
+            />
+          </div>
+          <label className="flex items-center gap-2 text-sm text-foreground/80">
+            <input
+              type="checkbox"
+              checked={notifyOnReply}
+              onChange={(e) => setNotifyOnReply(e.target.checked)}
+              className="h-4 w-4 rounded border-black/20"
+            />
+            Notify me of replies to my comment
+          </label>
           <button
             type="submit"
             disabled={status === "loading"}

@@ -110,6 +110,8 @@ model Comment {
   parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
   replies         Comment[] @relation("CommentReplies")
   name            String
+  email           String?
+  notifyOnReply   Boolean   @default(false)
   body            String    @db.Text
   createdAt       DateTime  @default(now())
 

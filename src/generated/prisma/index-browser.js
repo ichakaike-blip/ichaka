@@ -196,6 +196,8 @@ exports.Prisma.CommentScalarFieldEnum = {
   postId: 'postId',
   parentCommentId: 'parentCommentId',
   name: 'name',
+  email: 'email',
+  notifyOnReply: 'notifyOnReply',
   body: 'body',
   createdAt: 'createdAt'
 };

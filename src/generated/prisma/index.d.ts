@@ -9007,6 +9007,8 @@ export namespace Prisma {
     postId: string | null
     parentCommentId: string | null
     name: string | null
+    email: string | null
+    notifyOnReply: boolean | null
     body: string | null
     createdAt: Date | null
   }
@@ -9016,6 +9018,8 @@ export namespace Prisma {
     postId: string | null
     parentCommentId: string | null
     name: string | null
+    email: string | null
+    notifyOnReply: boolean | null
     body: string | null
     createdAt: Date | null
   }
@@ -9025,6 +9029,8 @@ export namespace Prisma {
     postId: number
     parentCommentId: number
     name: number
+    email: number
+    notifyOnReply: number
     body: number
     createdAt: number
     _all: number
@@ -9036,6 +9042,8 @@ export namespace Prisma {
     postId?: true
     parentCommentId?: true
     name?: true
+    email?: true
+    notifyOnReply?: true
     body?: true
     createdAt?: true
   }
@@ -9045,6 +9053,8 @@ export namespace Prisma {
     postId?: true
     parentCommentId?: true
     name?: true
+    email?: true
+    notifyOnReply?: true
     body?: true
     createdAt?: true
   }
@@ -9054,6 +9064,8 @@ export namespace Prisma {
     postId?: true
     parentCommentId?: true
     name?: true
+    email?: true
+    notifyOnReply?: true
     body?: true
     createdAt?: true
     _all?: true
@@ -9136,6 +9148,8 @@ export namespace Prisma {
     postId: string
     parentCommentId: string | null
     name: string
+    email: string | null
+    notifyOnReply: boolean
     body: string
     createdAt: Date
     _count: CommentCountAggregateOutputType | null
@@ -9162,6 +9176,8 @@ export namespace Prisma {
     postId?: boolean
     parentCommentId?: boolean
     name?: boolean
+    email?: boolean
+    notifyOnReply?: boolean
     body?: boolean
     createdAt?: boolean
     post?: boolean | BlogPostDefaultArgs<ExtArgs>
@@ -9175,6 +9191,8 @@ export namespace Prisma {
     postId?: boolean
     parentCommentId?: boolean
     name?: boolean
+    email?: boolean
+    notifyOnReply?: boolean
     body?: boolean
     createdAt?: boolean
     post?: boolean | BlogPostDefaultArgs<ExtArgs>
@@ -9186,6 +9204,8 @@ export namespace Prisma {
     postId?: boolean
     parentCommentId?: boolean
     name?: boolean
+    email?: boolean
+    notifyOnReply?: boolean
     body?: boolean
     createdAt?: boolean
     post?: boolean | BlogPostDefaultArgs<ExtArgs>
@@ -9197,11 +9217,13 @@ export namespace Prisma {
     postId?: boolean
     parentCommentId?: boolean
     name?: boolean
+    email?: boolean
+    notifyOnReply?: boolean
     body?: boolean
     createdAt?: boolean
   }
 
-  export type CommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "postId" | "parentCommentId" | "name" | "body" | "createdAt", ExtArgs["result"]["comment"]>
+  export type CommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "postId" | "parentCommentId" | "name" | "email" | "notifyOnReply" | "body" | "createdAt", ExtArgs["result"]["comment"]>
   export type CommentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     post?: boolean | BlogPostDefaultArgs<ExtArgs>
     parentComment?: boolean | Comment$parentCommentArgs<ExtArgs>
@@ -9229,6 +9251,8 @@ export namespace Prisma {
       postId: string
       parentCommentId: string | null
       name: string
+      email: string | null
+      notifyOnReply: boolean
       body: string
       createdAt: Date
     }, ExtArgs["result"]["comment"]>
@@ -9661,6 +9685,8 @@ export namespace Prisma {
     readonly postId: FieldRef<"Comment", 'String'>
     readonly parentCommentId: FieldRef<"Comment", 'String'>
     readonly name: FieldRef<"Comment", 'String'>
+    readonly email: FieldRef<"Comment", 'String'>
+    readonly notifyOnReply: FieldRef<"Comment", 'Boolean'>
     readonly body: FieldRef<"Comment", 'String'>
     readonly createdAt: FieldRef<"Comment", 'DateTime'>
   }
@@ -10230,6 +10256,8 @@ export namespace Prisma {
     postId: 'postId',
     parentCommentId: 'parentCommentId',
     name: 'name',
+    email: 'email',
+    notifyOnReply: 'notifyOnReply',
     body: 'body',
     createdAt: 'createdAt'
   };
@@ -10788,6 +10816,8 @@ export namespace Prisma {
     postId?: StringFilter<"Comment"> | string
     parentCommentId?: StringNullableFilter<"Comment"> | string | null
     name?: StringFilter<"Comment"> | string
+    email?: StringNullableFilter<"Comment"> | string | null
+    notifyOnReply?: BoolFilter<"Comment"> | boolean
     body?: StringFilter<"Comment"> | string
     createdAt?: DateTimeFilter<"Comment"> | Date | string
     post?: XOR<BlogPostScalarRelationFilter, BlogPostWhereInput>
@@ -10800,6 +10830,8 @@ export namespace Prisma {
     postId?: SortOrder
     parentCommentId?: SortOrderInput | SortOrder
     name?: SortOrder
+    email?: SortOrderInput | SortOrder
+    notifyOnReply?: SortOrder
     body?: SortOrder
     createdAt?: SortOrder
     post?: BlogPostOrderByWithRelationInput
@@ -10815,6 +10847,8 @@ export namespace Prisma {
     postId?: StringFilter<"Comment"> | string
     parentCommentId?: StringNullableFilter<"Comment"> | string | null
     name?: StringFilter<"Comment"> | string
+    email?: StringNullableFilter<"Comment"> | string | null
+    notifyOnReply?: BoolFilter<"Comment"> | boolean
     body?: StringFilter<"Comment"> | string
     createdAt?: DateTimeFilter<"Comment"> | Date | string
     post?: XOR<BlogPostScalarRelationFilter, BlogPostWhereInput>
@@ -10827,6 +10861,8 @@ export namespace Prisma {
     postId?: SortOrder
     parentCommentId?: SortOrderInput | SortOrder
     name?: SortOrder
+    email?: SortOrderInput | SortOrder
+    notifyOnReply?: SortOrder
     body?: SortOrder
     createdAt?: SortOrder
     _count?: CommentCountOrderByAggregateInput
@@ -10842,6 +10878,8 @@ export namespace Prisma {
     postId?: StringWithAggregatesFilter<"Comment"> | string
     parentCommentId?: StringNullableWithAggregatesFilter<"Comment"> | string | null
     name?: StringWithAggregatesFilter<"Comment"> | string
+    email?: StringNullableWithAggregatesFilter<"Comment"> | string | null
+    notifyOnReply?: BoolWithAggregatesFilter<"Comment"> | boolean
     body?: StringWithAggregatesFilter<"Comment"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Comment"> | Date | string
   }
@@ -11346,6 +11384,8 @@ export namespace Prisma {
   export type CommentCreateInput = {
     id?: string
     name: string
+    email?: string | null
+    notifyOnReply?: boolean
     body: string
     createdAt?: Date | string
     post: BlogPostCreateNestedOneWithoutCommentsInput
@@ -11358,6 +11398,8 @@ export namespace Prisma {
     postId: string
     parentCommentId?: string | null
     name: string
+    email?: string | null
+    notifyOnReply?: boolean
     body: string
     createdAt?: Date | string
     replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
@@ -11366,6 +11408,8 @@ export namespace Prisma {
   export type CommentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnReply?: BoolFieldUpdateOperationsInput | boolean
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     post?: BlogPostUpdateOneRequiredWithoutCommentsNestedInput
@@ -11378,6 +11422,8 @@ export namespace Prisma {
     postId?: StringFieldUpdateOperationsInput | string
     parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnReply?: BoolFieldUpdateOperationsInput | boolean
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
@@ -11388,6 +11434,8 @@ export namespace Prisma {
     postId: string
     parentCommentId?: string | null
     name: string
+    email?: string | null
+    notifyOnReply?: boolean
     body: string
     createdAt?: Date | string
   }
@@ -11395,6 +11443,8 @@ export namespace Prisma {
   export type CommentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnReply?: BoolFieldUpdateOperationsInput | boolean
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11404,6 +11454,8 @@ export namespace Prisma {
     postId?: StringFieldUpdateOperationsInput | string
     parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnReply?: BoolFieldUpdateOperationsInput | boolean
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11840,6 +11892,8 @@ export namespace Prisma {
     postId?: SortOrder
     parentCommentId?: SortOrder
     name?: SortOrder
+    email?: SortOrder
+    notifyOnReply?: SortOrder
     body?: SortOrder
     createdAt?: SortOrder
   }
@@ -11849,6 +11903,8 @@ export namespace Prisma {
     postId?: SortOrder
     parentCommentId?: SortOrder
     name?: SortOrder
+    email?: SortOrder
+    notifyOnReply?: SortOrder
     body?: SortOrder
     createdAt?: SortOrder
   }
@@ -11858,6 +11914,8 @@ export namespace Prisma {
     postId?: SortOrder
     parentCommentId?: SortOrder
     name?: SortOrder
+    email?: SortOrder
+    notifyOnReply?: SortOrder
     body?: SortOrder
     createdAt?: SortOrder
   }
@@ -12262,6 +12320,8 @@ export namespace Prisma {
   export type CommentCreateWithoutPostInput = {
     id?: string
     name: string
+    email?: string | null
+    notifyOnReply?: boolean
     body: string
     createdAt?: Date | string
     parentComment?: CommentCreateNestedOneWithoutRepliesInput
@@ -12272,6 +12332,8 @@ export namespace Prisma {
     id?: string
     parentCommentId?: string | null
     name: string
+    email?: string | null
+    notifyOnReply?: boolean
     body: string
     createdAt?: Date | string
     replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
@@ -12340,6 +12402,8 @@ export namespace Prisma {
     postId?: StringFilter<"Comment"> | string
     parentCommentId?: StringNullableFilter<"Comment"> | string | null
     name?: StringFilter<"Comment"> | string
+    email?: StringNullableFilter<"Comment"> | string | null
+    notifyOnReply?: BoolFilter<"Comment"> | boolean
     body?: StringFilter<"Comment"> | string
     createdAt?: DateTimeFilter<"Comment"> | Date | string
   }
@@ -12456,6 +12520,8 @@ export namespace Prisma {
   export type CommentCreateWithoutRepliesInput = {
     id?: string
     name: string
+    email?: string | null
+    notifyOnReply?: boolean
     body: string
     createdAt?: Date | string
     post: BlogPostCreateNestedOneWithoutCommentsInput
@@ -12467,6 +12533,8 @@ export namespace Prisma {
     postId: string
     parentCommentId?: string | null
     name: string
+    email?: string | null
+    notifyOnReply?: boolean
     body: string
     createdAt?: Date | string
   }
@@ -12479,6 +12547,8 @@ export namespace Prisma {
   export type CommentCreateWithoutParentCommentInput = {
     id?: string
     name: string
+    email?: string | null
+    notifyOnReply?: boolean
     body: string
     createdAt?: Date | string
     post: BlogPostCreateNestedOneWithoutCommentsInput
@@ -12489,6 +12559,8 @@ export namespace Prisma {
     id?: string
     postId: string
     name: string
+    email?: string | null
+    notifyOnReply?: boolean
     body: string
     createdAt?: Date | string
     replies?: CommentUncheckedCreateNestedManyWithoutParentCommentInput
@@ -12559,6 +12631,8 @@ export namespace Prisma {
   export type CommentUpdateWithoutRepliesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnReply?: BoolFieldUpdateOperationsInput | boolean
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     post?: BlogPostUpdateOneRequiredWithoutCommentsNestedInput
@@ -12570,6 +12644,8 @@ export namespace Prisma {
     postId?: StringFieldUpdateOperationsInput | string
     parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnReply?: BoolFieldUpdateOperationsInput | boolean
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12594,6 +12670,8 @@ export namespace Prisma {
     id?: string
     parentCommentId?: string | null
     name: string
+    email?: string | null
+    notifyOnReply?: boolean
     body: string
     createdAt?: Date | string
   }
@@ -12601,6 +12679,8 @@ export namespace Prisma {
   export type CommentUpdateWithoutPostInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnReply?: BoolFieldUpdateOperationsInput | boolean
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parentComment?: CommentUpdateOneWithoutRepliesNestedInput
@@ -12611,6 +12691,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnReply?: BoolFieldUpdateOperationsInput | boolean
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
@@ -12620,6 +12702,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     parentCommentId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnReply?: BoolFieldUpdateOperationsInput | boolean
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12686,6 +12770,8 @@ export namespace Prisma {
     id?: string
     postId: string
     name: string
+    email?: string | null
+    notifyOnReply?: boolean
     body: string
     createdAt?: Date | string
   }
@@ -12693,6 +12779,8 @@ export namespace Prisma {
   export type CommentUpdateWithoutParentCommentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnReply?: BoolFieldUpdateOperationsInput | boolean
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     post?: BlogPostUpdateOneRequiredWithoutCommentsNestedInput
@@ -12703,6 +12791,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     postId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnReply?: BoolFieldUpdateOperationsInput | boolean
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: CommentUncheckedUpdateManyWithoutParentCommentNestedInput
@@ -12712,6 +12802,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     postId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnReply?: BoolFieldUpdateOperationsInput | boolean
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
