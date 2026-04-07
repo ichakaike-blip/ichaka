@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
+const resendFrom = process.env.RESEND_FROM || "Ichaka <blog@ichaka.com.ng>";
 
 export async function POST(req: NextRequest) {
   const { postId, name, body, parentCommentId, email, notifyOnReply } = await req.json();
@@ -53,7 +54,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (parentCommentId && resend) {
+    if (parentCommentId) {
+      if (!resend) {
+        console.error("Reply notification skipped: RESEND_API_KEY is not configured");
+      }
+
       const parentComment = await prisma.comment.findUnique({
         where: { id: parentCommentId },
         select: {
@@ -70,7 +75,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      if (parentComment?.email && parentComment.notifyOnReply) {
+      if (resend && parentComment?.email && parentComment.notifyOnReply) {
         const snippet =
           comment.body.length > 140
             ? `${comment.body.slice(0, 140).trimEnd()}...`
@@ -81,8 +86,8 @@ export async function POST(req: NextRequest) {
         const unsubscribeLink = `${siteUrl}/api/comments/unsubscribe?commentId=${encodeURIComponent(parentComment.id)}&email=${encodeURIComponent(parentComment.email)}&token=${encodeURIComponent(unsubscribeToken)}`;
 
         try {
-          await resend.emails.send({
-            from: process.env.EMAIL_FROM || "Ichaka <blog@ichaka.com.ng>",
+          const sendResult = await resend.emails.send({
+            from: resendFrom,
             to: parentComment.email,
             subject: `New reply to your comment on ${parentComment.post.title}`,
             html: `
@@ -107,9 +112,29 @@ export async function POST(req: NextRequest) {
               </div>
             `,
           });
+
+          if (sendResult.error) {
+            console.error("Resend rejected reply notification", sendResult.error);
+          } else {
+            console.info("Reply notification sent", {
+              commentId: comment.id,
+              parentCommentId,
+              to: parentComment.email,
+            });
+          }
         } catch (emailError) {
           console.error("Failed to send reply notification email", emailError);
         }
+      } else {
+        console.info("Reply notification skipped", {
+          commentId: comment.id,
+          parentCommentId,
+          hasResend: Boolean(resend),
+          parentCommentFound: Boolean(parentComment),
+          parentHasEmail: Boolean(parentComment?.email),
+          parentNotifyOnReply: Boolean(parentComment?.notifyOnReply),
+          resendFrom,
+        });
       }
     }
 
