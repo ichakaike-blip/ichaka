@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { postId, name, body } = await req.json();
+  const { postId, name, body, parentCommentId } = await req.json();
 
   if (!postId || !name?.trim() || !body?.trim()) {
     return NextResponse.json({ error: "Name and comment are required" }, { status: 400 });
@@ -14,6 +14,10 @@ export async function POST(req: NextRequest) {
         postId,
         name: name.trim(),
         body: body.trim(),
+        parentCommentId: parentCommentId || null,
+      },
+      include: {
+        replies: true,
       },
     });
     return NextResponse.json(comment, { status: 201 });

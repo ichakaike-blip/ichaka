@@ -103,13 +103,17 @@ model Subscriber {
 }
 
 model Comment {
-  id        String   @id @default(cuid())
-  postId    String
-  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  name      String
-  body      String   @db.Text
-  createdAt DateTime @default(now())
+  id              String    @id @default(cuid())
+  postId          String
+  post            BlogPost  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parentCommentId String?
+  parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies         Comment[] @relation("CommentReplies")
+  name            String
+  body            String    @db.Text
+  createdAt       DateTime  @default(now())
 
   @@index([postId])
+  @@index([parentCommentId])
   @@map("comments")
 }

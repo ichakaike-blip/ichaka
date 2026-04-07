@@ -107,9 +107,28 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
   }
 
   const comments = await prisma.comment.findMany({
-    where: { postId: post.id },
+    where: { postId: post.id, parentCommentId: null },
     orderBy: { createdAt: "asc" },
+    include: {
+      replies: {
+        orderBy: { createdAt: "asc" },
+        include: {
+          replies: {
+            orderBy: { createdAt: "asc" },
+          },
+        },
+      },
+    },
   });
+
+  // Helper function to convert all Date objects to ISO strings recursively
+  const convertCommentDates = (comments: any[]): any[] => {
+    return comments.map((c) => ({
+      ...c,
+      createdAt: c.createdAt.toISOString(),
+      replies: c.replies ? convertCommentDates(c.replies) : [],
+    }));
+  };
 
   const contentWithUnderline = (post.content ?? "").replace(
     /\+\+([^+]+)\+\+/g,
@@ -183,10 +202,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
         <div className="pt-8 border-t border-black/10 dark:border-white/10 mt-12">
           <CommentSection
             postId={post.id}
-            initialComments={comments.map((c) => ({
-              ...c,
-              createdAt: c.createdAt.toISOString(),
-            }))}
+            initialComments={convertCommentDates(comments)}
           />
         </div>
       </Reveal>

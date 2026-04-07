@@ -194,6 +194,7 @@ exports.Prisma.SubscriberScalarFieldEnum = {
 exports.Prisma.CommentScalarFieldEnum = {
   id: 'id',
   postId: 'postId',
+  parentCommentId: 'parentCommentId',
   name: 'name',
   body: 'body',
   createdAt: 'createdAt'
