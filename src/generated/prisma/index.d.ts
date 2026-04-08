@@ -4765,6 +4765,7 @@ export namespace Prisma {
   export type WriterMinAggregateOutputType = {
     id: string | null
     name: string | null
+    email: string | null
     bio: string | null
     avatar: string | null
     socials: string | null
@@ -4774,6 +4775,7 @@ export namespace Prisma {
   export type WriterMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    email: string | null
     bio: string | null
     avatar: string | null
     socials: string | null
@@ -4783,6 +4785,7 @@ export namespace Prisma {
   export type WriterCountAggregateOutputType = {
     id: number
     name: number
+    email: number
     bio: number
     avatar: number
     socials: number
@@ -4794,6 +4797,7 @@ export namespace Prisma {
   export type WriterMinAggregateInputType = {
     id?: true
     name?: true
+    email?: true
     bio?: true
     avatar?: true
     socials?: true
@@ -4803,6 +4807,7 @@ export namespace Prisma {
   export type WriterMaxAggregateInputType = {
     id?: true
     name?: true
+    email?: true
     bio?: true
     avatar?: true
     socials?: true
@@ -4812,6 +4817,7 @@ export namespace Prisma {
   export type WriterCountAggregateInputType = {
     id?: true
     name?: true
+    email?: true
     bio?: true
     avatar?: true
     socials?: true
@@ -4894,6 +4900,7 @@ export namespace Prisma {
   export type WriterGroupByOutputType = {
     id: string
     name: string
+    email: string | null
     bio: string
     avatar: string | null
     socials: string
@@ -4920,6 +4927,7 @@ export namespace Prisma {
   export type WriterSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    email?: boolean
     bio?: boolean
     avatar?: boolean
     socials?: boolean
@@ -4931,6 +4939,7 @@ export namespace Prisma {
   export type WriterSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    email?: boolean
     bio?: boolean
     avatar?: boolean
     socials?: boolean
@@ -4940,6 +4949,7 @@ export namespace Prisma {
   export type WriterSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    email?: boolean
     bio?: boolean
     avatar?: boolean
     socials?: boolean
@@ -4949,13 +4959,14 @@ export namespace Prisma {
   export type WriterSelectScalar = {
     id?: boolean
     name?: boolean
+    email?: boolean
     bio?: boolean
     avatar?: boolean
     socials?: boolean
     createdAt?: boolean
   }
 
-  export type WriterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "bio" | "avatar" | "socials" | "createdAt", ExtArgs["result"]["writer"]>
+  export type WriterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "bio" | "avatar" | "socials" | "createdAt", ExtArgs["result"]["writer"]>
   export type WriterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     posts?: boolean | Writer$postsArgs<ExtArgs>
     _count?: boolean | WriterCountOutputTypeDefaultArgs<ExtArgs>
@@ -4971,6 +4982,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      email: string | null
       bio: string
       avatar: string | null
       socials: string
@@ -5401,6 +5413,7 @@ export namespace Prisma {
   interface WriterFieldRefs {
     readonly id: FieldRef<"Writer", 'String'>
     readonly name: FieldRef<"Writer", 'String'>
+    readonly email: FieldRef<"Writer", 'String'>
     readonly bio: FieldRef<"Writer", 'String'>
     readonly avatar: FieldRef<"Writer", 'String'>
     readonly socials: FieldRef<"Writer", 'String'>
@@ -10201,6 +10214,7 @@ export namespace Prisma {
   export const WriterScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    email: 'email',
     bio: 'bio',
     avatar: 'avatar',
     socials: 'socials',
@@ -10554,6 +10568,7 @@ export namespace Prisma {
     NOT?: WriterWhereInput | WriterWhereInput[]
     id?: StringFilter<"Writer"> | string
     name?: StringFilter<"Writer"> | string
+    email?: StringNullableFilter<"Writer"> | string | null
     bio?: StringFilter<"Writer"> | string
     avatar?: StringNullableFilter<"Writer"> | string | null
     socials?: StringFilter<"Writer"> | string
@@ -10564,6 +10579,7 @@ export namespace Prisma {
   export type WriterOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrderInput | SortOrder
     bio?: SortOrder
     avatar?: SortOrderInput | SortOrder
     socials?: SortOrder
@@ -10577,6 +10593,7 @@ export namespace Prisma {
     OR?: WriterWhereInput[]
     NOT?: WriterWhereInput | WriterWhereInput[]
     name?: StringFilter<"Writer"> | string
+    email?: StringNullableFilter<"Writer"> | string | null
     bio?: StringFilter<"Writer"> | string
     avatar?: StringNullableFilter<"Writer"> | string | null
     socials?: StringFilter<"Writer"> | string
@@ -10587,6 +10604,7 @@ export namespace Prisma {
   export type WriterOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrderInput | SortOrder
     bio?: SortOrder
     avatar?: SortOrderInput | SortOrder
     socials?: SortOrder
@@ -10602,6 +10620,7 @@ export namespace Prisma {
     NOT?: WriterScalarWhereWithAggregatesInput | WriterScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Writer"> | string
     name?: StringWithAggregatesFilter<"Writer"> | string
+    email?: StringNullableWithAggregatesFilter<"Writer"> | string | null
     bio?: StringWithAggregatesFilter<"Writer"> | string
     avatar?: StringNullableWithAggregatesFilter<"Writer"> | string | null
     socials?: StringWithAggregatesFilter<"Writer"> | string
@@ -11093,6 +11112,7 @@ export namespace Prisma {
   export type WriterCreateInput = {
     id?: string
     name: string
+    email?: string | null
     bio: string
     avatar?: string | null
     socials: string
@@ -11103,6 +11123,7 @@ export namespace Prisma {
   export type WriterUncheckedCreateInput = {
     id?: string
     name: string
+    email?: string | null
     bio: string
     avatar?: string | null
     socials: string
@@ -11113,6 +11134,7 @@ export namespace Prisma {
   export type WriterUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     socials?: StringFieldUpdateOperationsInput | string
@@ -11123,6 +11145,7 @@ export namespace Prisma {
   export type WriterUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     socials?: StringFieldUpdateOperationsInput | string
@@ -11133,6 +11156,7 @@ export namespace Prisma {
   export type WriterCreateManyInput = {
     id?: string
     name: string
+    email?: string | null
     bio: string
     avatar?: string | null
     socials: string
@@ -11142,6 +11166,7 @@ export namespace Prisma {
   export type WriterUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     socials?: StringFieldUpdateOperationsInput | string
@@ -11151,6 +11176,7 @@ export namespace Prisma {
   export type WriterUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     socials?: StringFieldUpdateOperationsInput | string
@@ -11714,6 +11740,7 @@ export namespace Prisma {
   export type WriterCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrder
     bio?: SortOrder
     avatar?: SortOrder
     socials?: SortOrder
@@ -11723,6 +11750,7 @@ export namespace Prisma {
   export type WriterMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrder
     bio?: SortOrder
     avatar?: SortOrder
     socials?: SortOrder
@@ -11732,6 +11760,7 @@ export namespace Prisma {
   export type WriterMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrder
     bio?: SortOrder
     avatar?: SortOrder
     socials?: SortOrder
@@ -12297,6 +12326,7 @@ export namespace Prisma {
   export type WriterCreateWithoutPostsInput = {
     id?: string
     name: string
+    email?: string | null
     bio: string
     avatar?: string | null
     socials: string
@@ -12306,6 +12336,7 @@ export namespace Prisma {
   export type WriterUncheckedCreateWithoutPostsInput = {
     id?: string
     name: string
+    email?: string | null
     bio: string
     avatar?: string | null
     socials: string
@@ -12363,6 +12394,7 @@ export namespace Prisma {
   export type WriterUpdateWithoutPostsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     socials?: StringFieldUpdateOperationsInput | string
@@ -12372,6 +12404,7 @@ export namespace Prisma {
   export type WriterUncheckedUpdateWithoutPostsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     socials?: StringFieldUpdateOperationsInput | string

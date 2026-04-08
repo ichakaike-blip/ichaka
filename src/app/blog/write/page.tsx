@@ -5,6 +5,7 @@ import { Reveal } from "@/components/reveal";
 
 type SubmissionPayload = {
   name: string;
+  email: string;
   bio: string;
   avatarUrl: string;
   twitter: string;
@@ -19,6 +20,7 @@ type SubmissionPayload = {
 
 const initialForm: SubmissionPayload = {
   name: "",
+  email: "",
   bio: "",
   avatarUrl: "",
   twitter: "",
@@ -90,6 +92,18 @@ export default function SubmitPage() {
               <div className="space-y-2">
                 <label htmlFor="name" className="text-sm text-foreground/80">Name</label>
                 <input id="name" required value={form.name} onChange={(e) => onChange("name", e.target.value)} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm text-foreground/80">Email</label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={(e) => onChange("email", e.target.value)}
+                  className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400"
+                />
               </div>
 
               <div className="space-y-2">

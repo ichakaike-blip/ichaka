@@ -53,6 +53,7 @@ model BlogPost {
 model Writer {
   id        String     @id @default(cuid())
   name      String
+  email     String?
   bio       String
   avatar    String?
   socials   String

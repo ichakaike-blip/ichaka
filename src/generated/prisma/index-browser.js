@@ -153,6 +153,7 @@ exports.Prisma.BlogPostScalarFieldEnum = {
 exports.Prisma.WriterScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  email: 'email',
   bio: 'bio',
   avatar: 'avatar',
   socials: 'socials',

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import SubmissionItemActions from "./SubmissionItem";
+import WriterEmailBackfill from "./WriterEmailBackfill";
 
 export const dynamic = "force-dynamic";
 
@@ -40,12 +41,37 @@ export default async function AdminSubmissionsPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  const writersMissingEmail = await prisma.writer.findMany({
+    where: {
+      OR: [{ email: null }, { email: "" }],
+    },
+    include: {
+      posts: {
+        select: { title: true },
+        orderBy: { createdAt: "desc" },
+      },
+      _count: {
+        select: { posts: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const writerBackfillItems = writersMissingEmail.map((writer) => ({
+    id: writer.id,
+    name: writer.name,
+    postCount: writer._count.posts,
+    latestPostTitle: writer.posts[0]?.title ?? "No post",
+  }));
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-foreground mb-2">Submissions</h1>
         <p className="text-foreground/60">Review guest writer submissions before publishing.</p>
       </div>
+
+      <WriterEmailBackfill initialWriters={writerBackfillItems} />
 
       {submissions.length === 0 ? (
         <p className="text-foreground/40 text-center py-8">No pending submissions.</p>

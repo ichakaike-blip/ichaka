@@ -33,12 +33,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const name = asTrimmedString(body?.name);
+    const email = asTrimmedString(body?.email).toLowerCase();
     const bio = asTrimmedString(body?.bio);
     const postTitle = asTrimmedString(body?.postTitle);
     const postExcerpt = asTrimmedString(body?.postExcerpt);
     const postContent = asTrimmedString(body?.postContent);
 
-    if (!name || !bio || !postTitle || !postExcerpt || !postContent) {
+    if (!name || !email || !bio || !postTitle || !postExcerpt || !postContent) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -54,6 +55,7 @@ export async function POST(req: NextRequest) {
     const writer = await prisma.writer.create({
       data: {
         name,
+        email,
         bio,
         avatar: avatarUrl || null,
         socials: JSON.stringify({ twitter, linkedin, substack, website }),

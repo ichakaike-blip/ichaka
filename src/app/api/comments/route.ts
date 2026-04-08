@@ -13,6 +13,15 @@ const resend = process.env.RESEND_API_KEY
   : null;
 const resendFrom = process.env.RESEND_FROM || "Ichaka <blog@ichaka.com.ng>";
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function POST(req: NextRequest) {
   const { postId, name, body, parentCommentId, email, notifyOnReply } = await req.json();
 
@@ -53,6 +62,63 @@ export async function POST(req: NextRequest) {
         createdAt: true,
       },
     });
+
+    if (resend) {
+      const postWithWriter = await prisma.blogPost.findUnique({
+        where: { id: postId },
+        select: {
+          slug: true,
+          title: true,
+          writer: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      const writerEmail = normalizeEmail(postWithWriter?.writer?.email);
+      const commenterEmail = normalizedEmail;
+
+      if (postWithWriter?.writer && writerEmail && writerEmail !== commenterEmail) {
+        const snippet =
+          comment.body.length > 160
+            ? `${comment.body.slice(0, 160).trimEnd()}...`
+            : comment.body;
+        const commentLink = `${siteUrl}/blog/${postWithWriter.slug}#comment-${comment.id}`;
+
+        try {
+          const writerSendResult = await resend.emails.send({
+            from: resendFrom,
+            to: writerEmail,
+            subject: `New comment on your post: ${postWithWriter.title}`,
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; padding: 24px; color: #111827;">
+                <h2 style="font-size: 20px; margin-bottom: 10px;">New comment on your post</h2>
+                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">
+                  <strong>${escapeHtml(comment.name)}</strong> commented on your post <strong>${escapeHtml(postWithWriter.title)}</strong>.
+                </p>
+                <blockquote style="margin: 0 0 18px; padding: 12px 14px; border-left: 4px solid #f97316; background: #fff7ed; color: #7c2d12;">
+                  ${escapeHtml(snippet)}
+                </blockquote>
+                <p style="margin-bottom: 0;">
+                  <a href="${commentLink}" style="display: inline-block; background: #f97316; color: #ffffff; text-decoration: none; padding: 10px 16px; border-radius: 6px; font-weight: 600;">
+                    View comment
+                  </a>
+                </p>
+              </div>
+            `,
+          });
+
+          if (writerSendResult.error) {
+            console.error("Resend rejected writer comment notification", writerSendResult.error);
+          }
+        } catch (writerEmailError) {
+          console.error("Failed to send writer comment notification", writerEmailError);
+        }
+      }
+    }
 
     if (parentCommentId) {
       if (!resend) {
@@ -97,7 +163,7 @@ export async function POST(req: NextRequest) {
                   <strong>${comment.name}</strong> replied to your comment:
                 </p>
                 <blockquote style="margin: 0 0 18px; padding: 12px 14px; border-left: 4px solid #f97316; background: #fff7ed; color: #7c2d12;">
-                  ${snippet.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+                  ${escapeHtml(snippet)}
                 </blockquote>
                 <p style="margin-bottom: 22px;">
                   <a href="${postLink}" style="display: inline-block; background: #f97316; color: #ffffff; text-decoration: none; padding: 10px 16px; border-radius: 6px; font-weight: 600;">
