@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Reveal } from "@/components/reveal";
 
 type SubmissionPayload = {
@@ -18,6 +18,13 @@ type SubmissionPayload = {
   postContent: string;
 };
 
+type WriterProfile = Pick<
+  SubmissionPayload,
+  "name" | "email" | "bio" | "avatarUrl" | "twitter" | "linkedin" | "substack" | "website"
+>;
+
+const WRITER_PROFILE_STORAGE_KEY = "ichaka-guest-writer-profile";
+
 const initialForm: SubmissionPayload = {
   name: "",
   email: "",
@@ -33,14 +40,113 @@ const initialForm: SubmissionPayload = {
   postContent: "",
 };
 
+const initialWriterProfile: WriterProfile = {
+  name: "",
+  email: "",
+  bio: "",
+  avatarUrl: "",
+  twitter: "",
+  linkedin: "",
+  substack: "",
+  website: "",
+};
+
+function readSavedWriterProfile(): WriterProfile {
+  if (typeof window === "undefined") {
+    return initialWriterProfile;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(WRITER_PROFILE_STORAGE_KEY);
+    if (!raw) {
+      return initialWriterProfile;
+    }
+
+    const parsed = JSON.parse(raw) as Partial<WriterProfile>;
+    return {
+      name: parsed.name?.trim() || "",
+      email: parsed.email?.trim() || "",
+      bio: parsed.bio?.trim() || "",
+      avatarUrl: parsed.avatarUrl?.trim() || "",
+      twitter: parsed.twitter?.trim() || "",
+      linkedin: parsed.linkedin?.trim() || "",
+      substack: parsed.substack?.trim() || "",
+      website: parsed.website?.trim() || "",
+    };
+  } catch {
+    return initialWriterProfile;
+  }
+}
+
+function saveWriterProfile(profile: WriterProfile) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(WRITER_PROFILE_STORAGE_KEY, JSON.stringify(profile));
+}
+
+function clearWriterProfile() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.removeItem(WRITER_PROFILE_STORAGE_KEY);
+}
+
 export default function SubmitPage() {
   const [form, setForm] = useState<SubmissionPayload>(initialForm);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [rememberDetails, setRememberDetails] = useState(true);
+
+  useEffect(() => {
+    const savedProfile = readSavedWriterProfile();
+    if (savedProfile.name || savedProfile.email || savedProfile.bio) {
+      setForm((prev) => ({ ...prev, ...savedProfile }));
+    }
+  }, []);
 
   function onChange<K extends keyof SubmissionPayload>(key: K, value: SubmissionPayload[K]) {
-    setForm((prev) => ({ ...prev, [key]: value }));
+    setForm((prev) => {
+      const next = { ...prev, [key]: value };
+
+      if (rememberDetails && ["name", "email", "bio", "avatarUrl", "twitter", "linkedin", "substack", "website"].includes(key)) {
+        saveWriterProfile({
+          name: next.name,
+          email: next.email,
+          bio: next.bio,
+          avatarUrl: next.avatarUrl,
+          twitter: next.twitter,
+          linkedin: next.linkedin,
+          substack: next.substack,
+          website: next.website,
+        });
+      }
+
+      return next;
+    });
+  }
+
+  function onRememberDetailsChange(nextValue: boolean) {
+    setRememberDetails(nextValue);
+
+    if (!nextValue) {
+      clearWriterProfile();
+      return;
+    }
+
+    saveWriterProfile({
+      name: form.name,
+      email: form.email,
+      bio: form.bio,
+      avatarUrl: form.avatarUrl,
+      twitter: form.twitter,
+      linkedin: form.linkedin,
+      substack: form.substack,
+      website: form.website,
+    });
   }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -59,6 +165,19 @@ export default function SubmitPage() {
         const data = await response.json().catch(() => ({}));
         setError(typeof data?.error === "string" ? data.error : "Failed to submit post");
         return;
+      }
+
+      if (rememberDetails) {
+        saveWriterProfile({
+          name: form.name,
+          email: form.email,
+          bio: form.bio,
+          avatarUrl: form.avatarUrl,
+          twitter: form.twitter,
+          linkedin: form.linkedin,
+          substack: form.substack,
+          website: form.website,
+        });
       }
 
       setSubmitted(true);
@@ -110,6 +229,16 @@ export default function SubmitPage() {
                 <label htmlFor="bio" className="text-sm text-foreground/80">Bio</label>
                 <textarea id="bio" rows={3} required placeholder="A short bio that will appear on your post" value={form.bio} onChange={(e) => onChange("bio", e.target.value)} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
               </div>
+
+              <label className="flex items-center gap-2 text-sm text-foreground/70">
+                <input
+                  type="checkbox"
+                  checked={rememberDetails}
+                  onChange={(e) => onRememberDetailsChange(e.target.checked)}
+                  className="h-4 w-4 rounded border-foreground/20"
+                />
+                Remember my details on this device
+              </label>
 
               <div className="space-y-2">
                 <label htmlFor="avatarUrl" className="text-sm text-foreground/80">Avatar image URL (optional)</label>
