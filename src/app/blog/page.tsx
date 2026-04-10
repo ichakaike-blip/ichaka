@@ -20,10 +20,18 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  const posts = await prisma.blogPost.findMany({
-    where: { published: true },
-    orderBy: { publishedAt: "desc" },
-  });
+  let posts: Awaited<ReturnType<typeof prisma.blogPost.findMany>> = [];
+  let loadError = false;
+
+  try {
+    posts = await prisma.blogPost.findMany({
+      where: { published: true },
+      orderBy: { publishedAt: "desc" },
+    });
+  } catch (error) {
+    loadError = true;
+    console.error("Blog page failed to load posts", error);
+  }
   type Post = (typeof posts)[number];
 
   return (
@@ -51,7 +59,17 @@ export default async function BlogPage() {
         </div>
       </Reveal>
 
-      {posts.length === 0 ? (
+      {loadError ? (
+        <Reveal delay={0.05}>
+          <div className="card border-black/10 dark:border-white/10">
+            <p className="muted">
+              We could not load blog posts right now. Please refresh and try again.
+            </p>
+          </div>
+        </Reveal>
+      ) : null}
+
+      {!loadError && posts.length === 0 ? (
         <Reveal delay={0.05}>
           <div className="card border-black/10 dark:border-white/10">
             <p className="muted">

@@ -76,7 +76,13 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await prisma.blogPost.findUnique({ where: { slug } });
+  let post = null;
+
+  try {
+    post = await prisma.blogPost.findUnique({ where: { slug } });
+  } catch (error) {
+    console.error("Blog metadata load failed", { slug, error });
+  }
 
   if (!post) {
     return {
@@ -97,29 +103,40 @@ export async function generateMetadata({
 
 export default async function BlogPostPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const post = await prisma.blogPost.findUnique({
-    where: { slug },
-    include: { writer: true },
-  });
+  let post: any = null;
+  let comments: any[] = [];
+  let loadError = false;
 
-  if (!post || !post.published) {
-    notFound();
-  }
+  try {
+    post = await prisma.blogPost.findUnique({
+      where: { slug },
+      include: { writer: true },
+    });
 
-  const comments = await prisma.comment.findMany({
-    where: { postId: post.id, parentCommentId: null },
-    orderBy: { createdAt: "asc" },
-    include: {
-      replies: {
+    if (post?.published) {
+      comments = await prisma.comment.findMany({
+        where: { postId: post.id, parentCommentId: null },
         orderBy: { createdAt: "asc" },
         include: {
           replies: {
             orderBy: { createdAt: "asc" },
+            include: {
+              replies: {
+                orderBy: { createdAt: "asc" },
+              },
+            },
           },
         },
-      },
-    },
-  });
+      });
+    }
+  } catch (error) {
+    loadError = true;
+    console.error("Blog post page load failed", { slug, error });
+  }
+
+  if (!post || !post.published) {
+    notFound();
+  }
 
   // Helper function to convert all Date objects to ISO strings recursively
   const convertCommentDates = (comments: any[]): any[] => {
@@ -198,14 +215,22 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
         </div>
       ) : null}
 
-      <Reveal delay={0.16}>
-        <div className="pt-8 border-t border-black/10 dark:border-white/10 mt-12">
-          <CommentSection
-            postId={post.id}
-            initialComments={convertCommentDates(comments)}
-          />
-        </div>
-      </Reveal>
+      {loadError ? (
+        <Reveal delay={0.16}>
+          <div className="pt-8 border-t border-black/10 dark:border-white/10 mt-12">
+            <p className="muted">Comments are temporarily unavailable. Please refresh and try again.</p>
+          </div>
+        </Reveal>
+      ) : (
+        <Reveal delay={0.16}>
+          <div className="pt-8 border-t border-black/10 dark:border-white/10 mt-12">
+            <CommentSection
+              postId={post.id}
+              initialComments={convertCommentDates(comments)}
+            />
+          </div>
+        </Reveal>
+      )}
     </article>
   );
 }
