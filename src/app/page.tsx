@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Reveal } from "@/components/reveal";
 import { SectionProgress } from "@/components/section-progress";
-import { HeroParallax } from "@/components/hero-parallax";
 
 import { siteUrl } from "@/lib/site";
 
@@ -58,17 +58,30 @@ export default function HomePage() {
       
       <SectionProgress sections={homeSections} />
 
-      <section id="manifesto" className="relative min-h-[calc(100vh-140px)] scroll-mt-20 flex flex-col justify-center pb-12 overflow-hidden">
-
-        {/* Animated film grain — editorial texture layer */}
-        <div className="hero-grain absolute inset-0 pointer-events-none z-[1] opacity-[0.045]" aria-hidden />
-
-        {/* Figure with mouse-parallax */}
+      <section id="manifesto" className="relative min-h-[calc(100vh-140px)] scroll-mt-20 flex flex-col justify-center pb-12">
+        {/* Background Image placed by the side of the name, bound to the full section height! */}
         <div
-          className="absolute right-0 top-0 bottom-0 pointer-events-none xl:translate-x-12 z-0 w-full md:w-[60%] lg:w-[50%]"
-          style={{ WebkitMaskImage: "radial-gradient(ellipse 82% 82% at 68% 38%, black 22%, transparent 95%)" }}
+          className="absolute right-0 top-0 bottom-0 pointer-events-none opacity-50 dark:opacity-30 md:opacity-70 dark:md:opacity-50 xl:translate-x-12 z-0 w-full md:w-[60%] lg:w-[50%]"
+          style={{ WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 65% 40%, black 20%, transparent 100%)" }}
         >
-          <HeroParallax />
+          <div className="relative w-full h-full grayscale mix-blend-luminosity">
+            {/* Dark Mode Hero */}
+            <Image
+              src="/hero.jpg"
+              alt="Excel Ikueze Dark"
+              fill
+              priority
+              className="object-cover object-center md:object-[center_top] hidden dark:block"
+            />
+            {/* Light Mode Hero */}
+            <Image
+              src="/hero2.png"
+              alt="Excel Ikueze Light"
+              fill
+              priority
+              className="object-cover object-center md:object-[center_top] block dark:hidden"
+            />
+          </div>
         </div>
 
         <Reveal>
