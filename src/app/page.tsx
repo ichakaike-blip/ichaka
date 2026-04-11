@@ -74,8 +74,8 @@ export default function HomePage() {
               className="object-cover object-center md:object-[center_top]"
             />
           </div>
-          {/* Light Mode Hero — multiply blends dark pixels into white bg */}
-          <div className="relative w-full h-full grayscale mix-blend-multiply opacity-60 md:opacity-80 block dark:hidden">
+          {/* Light Mode Hero — luminosity mirrors dark mode, solid but natural */}
+          <div className="relative w-full h-full grayscale mix-blend-luminosity opacity-20 md:opacity-35 block dark:hidden">
             <Image
               src="/hero2.png"
               alt="Excel Ikueze Light"
