@@ -28,7 +28,7 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-black border-r border-foreground/10">
+      <aside className="w-64 bg-white dark:bg-gray-900 border-r border-foreground/10">
         <div className="p-6">
           <h1 className="text-2xl font-bold text-foreground mb-2">ICHAKA</h1>
           <p className="text-foreground/50 text-sm">Admin Panel</p>
@@ -68,7 +68,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
-      className="block px-3 py-2 text-foreground/70 hover:text-foreground hover:bg-foreground/10 rounded transition"
+      className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
     >
       {label}
     </Link>

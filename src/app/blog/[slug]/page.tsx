@@ -177,7 +177,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
       <h1 className="text-3xl font-semibold md:text-4xl">{post.title}</h1>
       {post.content ? (
         <div
-          className="prose prose-lg max-w-none prose-p:mb-6 prose-p:leading-8 prose-headings:mt-8 prose-headings:mb-4 dark:prose-invert prose-p:text-gray-300 dark:prose-p:text-gray-300"
+          className="prose prose-lg max-w-none prose-p:mb-6 prose-p:leading-8 prose-headings:mt-8 prose-headings:mb-4 dark:prose-invert prose-p:text-gray-900 dark:prose-p:text-gray-300"
           dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
       ) : (
