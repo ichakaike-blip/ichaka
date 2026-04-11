@@ -61,25 +61,27 @@ export default function HomePage() {
       <section id="manifesto" className="relative min-h-[calc(100vh-140px)] scroll-mt-20 flex flex-col justify-center pb-12">
         {/* Background Image placed by the side of the name, bound to the full section height! */}
         <div 
-          className="absolute right-0 top-0 bottom-0 pointer-events-none opacity-50 dark:opacity-30 md:opacity-70 dark:md:opacity-50 xl:translate-x-12 z-0 w-full md:w-[60%] lg:w-[50%]"
+          className="absolute right-0 top-0 bottom-0 pointer-events-none xl:translate-x-12 z-0 w-full md:w-[60%] lg:w-[50%]"
           style={{ WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 65% 40%, black 20%, transparent 100%)" }}
         >
-          <div className="relative w-full h-full grayscale mix-blend-luminosity">
-            {/* Dark Mode Hero */}
+          {/* Dark Mode Hero */}
+          <div className="relative w-full h-full grayscale mix-blend-luminosity opacity-30 md:opacity-50 hidden dark:block">
             <Image
               src="/hero.jpg"
               alt="Excel Ikueze Dark"
               fill
               priority
-              className="object-cover object-center md:object-[center_top] hidden dark:block"
+              className="object-cover object-center md:object-[center_top]"
             />
-            {/* Light (White) Mode Hero */}
+          </div>
+          {/* Light Mode Hero — multiply blends dark pixels into white bg */}
+          <div className="relative w-full h-full grayscale mix-blend-multiply opacity-60 md:opacity-80 block dark:hidden">
             <Image
-              src="/hero2.jpg"
+              src="/hero2.png"
               alt="Excel Ikueze Light"
               fill
               priority
-              className="object-cover object-center md:object-[center_top] block dark:hidden"
+              className="object-cover object-center md:object-[center_top]"
             />
           </div>
         </div>
