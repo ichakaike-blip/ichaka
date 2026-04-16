@@ -46,7 +46,6 @@ export default async function ContentSkillsPage() {
                   alt={`${item.title} preview`}
                   width={640}
                   height={360}
-                  unoptimized
                   className="mb-3 h-36 w-full rounded-lg border border-black/10 object-cover dark:border-white/10"
                 />
               ) : null}

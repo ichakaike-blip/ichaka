@@ -50,7 +50,6 @@ export default async function ContentProjectsPage() {
                   alt={project.title}
                   width={640}
                   height={360}
-                  unoptimized
                   className="w-full aspect-video object-cover rounded mb-4"
                 />
                 <h2 className="text-xl font-medium">{project.title}</h2>
