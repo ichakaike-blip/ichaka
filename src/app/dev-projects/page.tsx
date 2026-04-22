@@ -1,9 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { Reveal } from "@/components/reveal";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
+const getDevProjects = unstable_cache(
+  async () =>
+    prisma.devProject.findMany({
+      where: { published: true },
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+    }),
+  ["all-dev-projects"],
+  { revalidate: 3600 }
+);
 
 
 export const metadata: Metadata = {
@@ -17,10 +28,7 @@ export const metadata: Metadata = {
 };
 
 export default async function DevProjectsPage() {
-  const projects = await prisma.devProject.findMany({
-    where: { published: true },
-    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-  });
+  const projects = await getDevProjects();
 
   return (
     <section className="space-y-8">

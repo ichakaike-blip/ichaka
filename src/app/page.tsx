@@ -6,6 +6,8 @@ import { SectionProgress } from "@/components/section-progress";
 
 import { siteUrl } from "@/lib/site";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Home | Ichaka",
   description: "Ikueze Excel Ikenna (ichaka). Jack of all trades. Master of a few.",

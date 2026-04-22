@@ -1,10 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
+const getDevProjectBySlug = (slug: string) =>
+  unstable_cache(
+    async () =>
+      prisma.devProject.findUnique({
+        where: { slug },
+      }),
+    [`dev-project-${slug}`],
+    { revalidate: 3600 }
+  )();
 
 marked.setOptions({
   breaks: true,
@@ -18,7 +29,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await prisma.devProject.findUnique({ where: { slug } });
+  const project = await getDevProjectBySlug(slug);
 
   if (!project) {
     return {
@@ -44,9 +55,7 @@ export default async function DevProjectDetailPage({
 }) {
   const { slug } = await params;
 
-  const project = await prisma.devProject.findUnique({
-    where: { slug },
-  });
+  const project = await getDevProjectBySlug(slug);
 
   if (!project || !project.published) {
     notFound();

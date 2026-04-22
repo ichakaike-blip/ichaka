@@ -1,15 +1,23 @@
 import Link from "next/link";
 import Image from "next/image";
+import { unstable_cache } from "next/cache";
 import { Reveal } from "@/components/reveal";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
+const getContentProjects = unstable_cache(
+  async () =>
+    prisma.contentProject.findMany({
+      where: { published: true },
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+    }),
+  ["all-content-projects-skills"],
+  { revalidate: 3600 }
+);
 
 export default async function ContentSkillsPage() {
-  const projects = await prisma.contentProject.findMany({
-    where: { published: true },
-    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-  });
+  const projects = await getContentProjects();
 
   return (
     <section className="space-y-8">

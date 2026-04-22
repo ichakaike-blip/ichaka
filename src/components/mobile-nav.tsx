@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
@@ -27,7 +27,7 @@ export function MobileNav({ items }: { items: NavItem[] }) {
 
       <AnimatePresence>
         {open ? (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
@@ -53,7 +53,7 @@ export function MobileNav({ items }: { items: NavItem[] }) {
                 );
               })}
             </ul>
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
     </div>

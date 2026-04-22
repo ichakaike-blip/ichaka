@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, IBM_Plex_Mono, Inter } from "next/font/google";
+import { LazyMotion, domAnimation } from "framer-motion";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -75,11 +76,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${cormorantGaramond.variable} ${inter.variable} ${ibmPlexMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <Navbar />
-          <main className="border-t border-black/10 px-4 py-8 dark:border-white/10 md:px-6 md:py-10">
-            {children}
-          </main>
-          <Analytics />
+          <LazyMotion features={domAnimation} strict>
+            <Navbar />
+            <main className="border-t border-black/10 px-4 py-8 dark:border-white/10 md:px-6 md:py-10">
+              {children}
+            </main>
+            <Analytics />
+          </LazyMotion>
         </ThemeProvider>
       </body>
     </html>

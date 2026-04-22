@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { prisma } from "@/lib/prisma";
 import { Reveal } from "@/components/reveal";
 import CommentSection from "@/components/CommentSection";
 
-/* eslint-disable @next/next/no-img-element */
-
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 
 marked.setOptions({
@@ -70,6 +70,30 @@ marked.use({
 
 type Params = { slug: string };
 
+type PostBySlug = Awaited<ReturnType<typeof getPostBySlug>>;
+
+type CommentNode = {
+  createdAt: Date;
+  replies?: CommentNode[];
+  [key: string]: unknown;
+};
+
+type SerializedCommentNode = Omit<CommentNode, "createdAt" | "replies"> & {
+  createdAt: string;
+  replies: SerializedCommentNode[];
+};
+
+const getPostBySlug = (slug: string) =>
+  unstable_cache(
+    async () =>
+      prisma.blogPost.findUnique({
+        where: { slug },
+        include: { writer: true },
+      }),
+    [`post-${slug}`],
+    { revalidate: 3600 }
+  )();
+
 export async function generateMetadata({
   params,
 }: {
@@ -79,7 +103,7 @@ export async function generateMetadata({
   let post = null;
 
   try {
-    post = await prisma.blogPost.findUnique({ where: { slug } });
+    post = await getPostBySlug(slug);
   } catch (error) {
     console.error("Blog metadata load failed", { slug, error });
   }
@@ -103,18 +127,15 @@ export async function generateMetadata({
 
 export default async function BlogPostPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  let post: any = null;
-  let comments: any[] = [];
+  let post: PostBySlug = null;
+  let comments: CommentNode[] = [];
   let loadError = false;
 
   try {
-    post = await prisma.blogPost.findUnique({
-      where: { slug },
-      include: { writer: true },
-    });
+    post = await getPostBySlug(slug);
 
     if (post?.published) {
-      comments = await prisma.comment.findMany({
+      comments = (await prisma.comment.findMany({
         where: { postId: post.id, parentCommentId: null },
         orderBy: { createdAt: "asc" },
         include: {
@@ -127,7 +148,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
             },
           },
         },
-      });
+      })) as unknown as CommentNode[];
     }
   } catch (error) {
     loadError = true;
@@ -139,8 +160,8 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
   }
 
   // Helper function to convert all Date objects to ISO strings recursively
-  const convertCommentDates = (comments: any[]): any[] => {
-    return comments.map((c) => ({
+  const convertCommentDates = (items: CommentNode[]): SerializedCommentNode[] => {
+    return items.map((c) => ({
       ...c,
       createdAt: c.createdAt.toISOString(),
       replies: c.replies ? convertCommentDates(c.replies) : [],
@@ -187,11 +208,12 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
       {post.writer ? (
         <div className="bg-foreground/5 border border-foreground/10 rounded-xl p-6 mt-12 flex gap-4 items-start">
           {post.writer.avatar ? (
-            <img
+            <Image
               src={post.writer.avatar}
               alt={`${post.writer.name} avatar`}
+              width={56}
+              height={56}
               className="w-14 h-14 rounded-full object-cover shrink-0"
-              loading="lazy"
             />
           ) : null}
           <div>

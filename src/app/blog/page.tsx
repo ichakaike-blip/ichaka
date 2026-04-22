@@ -1,12 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
+import { unstable_cache } from "next/cache";
 import { Reveal } from "@/components/reveal";
 import { prisma } from "@/lib/prisma";
 import SubscribeForm from "@/components/SubscribeForm";
 
-/* eslint-disable @next/next/no-img-element */
+export const revalidate = 3600;
 
-export const dynamic = "force-dynamic";
+const getPosts = unstable_cache(
+  async () =>
+    prisma.blogPost.findMany({
+      where: { published: true },
+      orderBy: { publishedAt: "desc" },
+    }),
+  ["all-posts"],
+  { revalidate: 3600 }
+);
 
 
 export const metadata: Metadata = {
@@ -20,14 +30,11 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  let posts: Awaited<ReturnType<typeof prisma.blogPost.findMany>> = [];
+  let posts: Awaited<ReturnType<typeof getPosts>> = [];
   let loadError = false;
 
   try {
-    posts = await prisma.blogPost.findMany({
-      where: { published: true },
-      orderBy: { publishedAt: "desc" },
-    });
+    posts = await getPosts();
   } catch (error) {
     loadError = true;
     console.error("Blog page failed to load posts", error);
@@ -87,11 +94,13 @@ export default async function BlogPage() {
               className="card block border-black/10 transition hover:border-cyan-400 dark:border-white/10"
             >
               {post.coverImage && (
-                <img
+                <Image
                   src={post.coverImage}
                   alt={post.title}
+                  width={768}
+                  height={384}
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="mb-4 h-48 w-full rounded-t-lg object-cover"
-                  loading="lazy"
                 />
               )}
               <h2 className="text-xl font-medium">{post.title}</h2>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { MobileNav } from "@/components/mobile-nav";
 
 const ThemeToggle = dynamic(
@@ -49,7 +49,7 @@ export function Navbar() {
                   {item.label}
                   <AnimatePresence>
                     {active ? (
-                      <motion.span
+                      <m.span
                         layoutId="active-pill"
                         className="absolute inset-0 -z-10 rounded-full bg-black/10 dark:bg-white/10"
                         transition={{ type: "spring", stiffness: 380, damping: 30 }}
