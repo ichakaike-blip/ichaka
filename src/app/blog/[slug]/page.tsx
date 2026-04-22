@@ -73,14 +73,21 @@ type Params = { slug: string };
 type PostBySlug = Awaited<ReturnType<typeof getPostBySlug>>;
 
 type CommentNode = {
+  id: string;
+  name: string;
+  body: string;
   createdAt: Date;
   replies?: CommentNode[];
   [key: string]: unknown;
 };
 
-type SerializedCommentNode = Omit<CommentNode, "createdAt" | "replies"> & {
+type SerializedComment = {
+  id: string;
+  name: string;
+  body: string;
   createdAt: string;
-  replies: SerializedCommentNode[];
+  replies: SerializedComment[];
+  [key: string]: unknown;
 };
 
 const getPostBySlug = (slug: string) =>
@@ -160,7 +167,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
   }
 
   // Helper function to convert all Date objects to ISO strings recursively
-  const convertCommentDates = (items: CommentNode[]): SerializedCommentNode[] => {
+  const convertCommentDates = (items: CommentNode[]): SerializedComment[] => {
     return items.map((c) => ({
       ...c,
       createdAt: c.createdAt.toISOString(),
