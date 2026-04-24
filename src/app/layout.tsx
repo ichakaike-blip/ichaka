@@ -46,13 +46,12 @@ export const metadata: Metadata = {
   creator: "Ikueze Excel Ikenna",
   icons: {
     icon: [
-      { url: "/favicon.ico?v=2", sizes: "any" },
-      { url: "/icon-192.png?v=2", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png?v=2", sizes: "512x512", type: "image/png" },
+      { url: "/favicon-v2.ico", sizes: "any" },
+      { url: "/icon-v2.png", sizes: "192x192", type: "image/png" },
     ],
-    apple: "/apple-touch-icon.png?v=2",
+    apple: "/apple-icon-v2.png",
     other: [
-      { rel: "mask-icon", url: "/icon-192-maskable.png?v=2" },
+      { rel: "mask-icon", url: "/icon-192-maskable.png" },
     ],
   },
   manifest: "/manifest.json",
