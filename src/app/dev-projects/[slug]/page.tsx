@@ -4,6 +4,7 @@ import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { prisma } from "@/lib/prisma";
+import { ProjectPreview } from "@/components/ProjectPreview";
 
 export const revalidate = 3600;
 
@@ -72,15 +73,11 @@ export default async function DevProjectDetailPage({
         />
       </div>
 
-      <div className="relative w-full aspect-video rounded overflow-hidden border border-black/10 dark:border-white/10 pointer-events-auto">
-        <iframe
-          src={project.link}
-          title={project.title}
-          className="w-full h-full"
-          loading="lazy"
-          sandbox="allow-scripts allow-same-origin"
-        />
-      </div>
+      <ProjectPreview
+        src={project.link}
+        title={project.title}
+        imageUrl={project.imageUrl ?? undefined}
+      />
 
       <Link
         href={project.link}
