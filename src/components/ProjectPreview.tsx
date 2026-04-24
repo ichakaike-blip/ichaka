@@ -17,7 +17,7 @@ export function ProjectPreview({ src, title, imageUrl }: ProjectPreviewProps) {
         const res = await fetch(`/api/check-iframe?url=${encodeURIComponent(src)}`);
         const data = await res.json();
         setIsBlocked(!data.embeddable);
-      } catch (e) {
+      } catch {
         setIsBlocked(true);
       }
     }
