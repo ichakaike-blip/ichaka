@@ -5874,6 +5874,7 @@ export namespace Prisma {
     slug: string | null
     description: string | null
     link: string | null
+    imageUrl: string | null
     order: number | null
     published: boolean | null
     createdAt: Date | null
@@ -5886,6 +5887,7 @@ export namespace Prisma {
     slug: string | null
     description: string | null
     link: string | null
+    imageUrl: string | null
     order: number | null
     published: boolean | null
     createdAt: Date | null
@@ -5898,6 +5900,7 @@ export namespace Prisma {
     slug: number
     description: number
     link: number
+    imageUrl: number
     order: number
     published: number
     createdAt: number
@@ -5920,6 +5923,7 @@ export namespace Prisma {
     slug?: true
     description?: true
     link?: true
+    imageUrl?: true
     order?: true
     published?: true
     createdAt?: true
@@ -5932,6 +5936,7 @@ export namespace Prisma {
     slug?: true
     description?: true
     link?: true
+    imageUrl?: true
     order?: true
     published?: true
     createdAt?: true
@@ -5944,6 +5949,7 @@ export namespace Prisma {
     slug?: true
     description?: true
     link?: true
+    imageUrl?: true
     order?: true
     published?: true
     createdAt?: true
@@ -6043,6 +6049,7 @@ export namespace Prisma {
     slug: string
     description: string
     link: string
+    imageUrl: string | null
     order: number
     published: boolean
     createdAt: Date
@@ -6074,6 +6081,7 @@ export namespace Prisma {
     slug?: boolean
     description?: boolean
     link?: boolean
+    imageUrl?: boolean
     order?: boolean
     published?: boolean
     createdAt?: boolean
@@ -6086,6 +6094,7 @@ export namespace Prisma {
     slug?: boolean
     description?: boolean
     link?: boolean
+    imageUrl?: boolean
     order?: boolean
     published?: boolean
     createdAt?: boolean
@@ -6098,6 +6107,7 @@ export namespace Prisma {
     slug?: boolean
     description?: boolean
     link?: boolean
+    imageUrl?: boolean
     order?: boolean
     published?: boolean
     createdAt?: boolean
@@ -6110,13 +6120,14 @@ export namespace Prisma {
     slug?: boolean
     description?: boolean
     link?: boolean
+    imageUrl?: boolean
     order?: boolean
     published?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type DevProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "slug" | "description" | "link" | "order" | "published" | "createdAt" | "updatedAt", ExtArgs["result"]["devProject"]>
+  export type DevProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "slug" | "description" | "link" | "imageUrl" | "order" | "published" | "createdAt" | "updatedAt", ExtArgs["result"]["devProject"]>
 
   export type $DevProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "DevProject"
@@ -6127,6 +6138,7 @@ export namespace Prisma {
       slug: string
       description: string
       link: string
+      imageUrl: string | null
       order: number
       published: boolean
       createdAt: Date
@@ -6559,6 +6571,7 @@ export namespace Prisma {
     readonly slug: FieldRef<"DevProject", 'String'>
     readonly description: FieldRef<"DevProject", 'String'>
     readonly link: FieldRef<"DevProject", 'String'>
+    readonly imageUrl: FieldRef<"DevProject", 'String'>
     readonly order: FieldRef<"DevProject", 'Int'>
     readonly published: FieldRef<"DevProject", 'Boolean'>
     readonly createdAt: FieldRef<"DevProject", 'DateTime'>
@@ -10230,6 +10243,7 @@ export namespace Prisma {
     slug: 'slug',
     description: 'description',
     link: 'link',
+    imageUrl: 'imageUrl',
     order: 'order',
     published: 'published',
     createdAt: 'createdAt',
@@ -10636,6 +10650,7 @@ export namespace Prisma {
     slug?: StringFilter<"DevProject"> | string
     description?: StringFilter<"DevProject"> | string
     link?: StringFilter<"DevProject"> | string
+    imageUrl?: StringNullableFilter<"DevProject"> | string | null
     order?: IntFilter<"DevProject"> | number
     published?: BoolFilter<"DevProject"> | boolean
     createdAt?: DateTimeFilter<"DevProject"> | Date | string
@@ -10648,6 +10663,7 @@ export namespace Prisma {
     slug?: SortOrder
     description?: SortOrder
     link?: SortOrder
+    imageUrl?: SortOrderInput | SortOrder
     order?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -10663,6 +10679,7 @@ export namespace Prisma {
     title?: StringFilter<"DevProject"> | string
     description?: StringFilter<"DevProject"> | string
     link?: StringFilter<"DevProject"> | string
+    imageUrl?: StringNullableFilter<"DevProject"> | string | null
     order?: IntFilter<"DevProject"> | number
     published?: BoolFilter<"DevProject"> | boolean
     createdAt?: DateTimeFilter<"DevProject"> | Date | string
@@ -10675,6 +10692,7 @@ export namespace Prisma {
     slug?: SortOrder
     description?: SortOrder
     link?: SortOrder
+    imageUrl?: SortOrderInput | SortOrder
     order?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -10695,6 +10713,7 @@ export namespace Prisma {
     slug?: StringWithAggregatesFilter<"DevProject"> | string
     description?: StringWithAggregatesFilter<"DevProject"> | string
     link?: StringWithAggregatesFilter<"DevProject"> | string
+    imageUrl?: StringNullableWithAggregatesFilter<"DevProject"> | string | null
     order?: IntWithAggregatesFilter<"DevProject"> | number
     published?: BoolWithAggregatesFilter<"DevProject"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"DevProject"> | Date | string
@@ -11189,6 +11208,7 @@ export namespace Prisma {
     slug: string
     description: string
     link: string
+    imageUrl?: string | null
     order?: number
     published?: boolean
     createdAt?: Date | string
@@ -11201,6 +11221,7 @@ export namespace Prisma {
     slug: string
     description: string
     link: string
+    imageUrl?: string | null
     order?: number
     published?: boolean
     createdAt?: Date | string
@@ -11213,6 +11234,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     link?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11225,6 +11247,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     link?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11237,6 +11260,7 @@ export namespace Prisma {
     slug: string
     description: string
     link: string
+    imageUrl?: string | null
     order?: number
     published?: boolean
     createdAt?: Date | string
@@ -11249,6 +11273,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     link?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11261,6 +11286,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     link?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: IntFieldUpdateOperationsInput | number
     published?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11784,6 +11810,7 @@ export namespace Prisma {
     slug?: SortOrder
     description?: SortOrder
     link?: SortOrder
+    imageUrl?: SortOrder
     order?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -11800,6 +11827,7 @@ export namespace Prisma {
     slug?: SortOrder
     description?: SortOrder
     link?: SortOrder
+    imageUrl?: SortOrder
     order?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -11812,6 +11840,7 @@ export namespace Prisma {
     slug?: SortOrder
     description?: SortOrder
     link?: SortOrder
+    imageUrl?: SortOrder
     order?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder

@@ -10,6 +10,7 @@ interface DevProjectFormProps {
     slug: string;
     description: string;
     link: string;
+    imageUrl?: string | null;
     order: number;
     published: boolean;
   };
@@ -25,6 +26,7 @@ export default function DevProjectForm({ initialData }: DevProjectFormProps) {
     slug: initialData?.slug || "",
     description: initialData?.description || "",
     link: initialData?.link || "",
+    imageUrl: initialData?.imageUrl || "",
     order: String(initialData?.order ?? 0),
     published: initialData?.published ?? true,
   });
@@ -141,7 +143,7 @@ export default function DevProjectForm({ initialData }: DevProjectFormProps) {
 
       <div>
         <label htmlFor="link" className="block text-sm font-medium text-foreground mb-2">
-          Link
+          Link (Live URL)
         </label>
         <input
           type="url"
@@ -152,6 +154,27 @@ export default function DevProjectForm({ initialData }: DevProjectFormProps) {
           required
           className="w-full px-3 py-2 bg-foreground/5 border border-foreground/20 rounded text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500"
         />
+      </div>
+
+      <div>
+        <label htmlFor="imageUrl" className="block text-sm font-medium text-foreground mb-2">
+          Thumbnail Image URL <span className="text-foreground/40 font-normal">(screenshot or hosted image)</span>
+        </label>
+        <input
+          type="url"
+          id="imageUrl"
+          name="imageUrl"
+          value={formData.imageUrl}
+          onChange={handleChange}
+          placeholder="https://..."
+          className="w-full px-3 py-2 bg-foreground/5 border border-foreground/20 rounded text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange-500"
+        />
+        {formData.imageUrl && (
+          <div className="mt-2 rounded overflow-hidden border border-foreground/10 aspect-video w-full">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+          </div>
+        )}
       </div>
 
       <div>

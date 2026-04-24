@@ -166,6 +166,7 @@ exports.Prisma.DevProjectScalarFieldEnum = {
   slug: 'slug',
   description: 'description',
   link: 'link',
+  imageUrl: 'imageUrl',
   order: 'order',
   published: 'published',
   createdAt: 'createdAt',

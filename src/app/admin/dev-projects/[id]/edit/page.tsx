@@ -34,6 +34,7 @@ export default async function EditDevProjectPage({
             slug: project.slug,
             description: project.description,
             link: project.link,
+            imageUrl: project.imageUrl,
             order: project.order,
             published: project.published,
           }}

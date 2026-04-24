@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { Reveal } from "@/components/reveal";
@@ -46,15 +47,23 @@ export default async function DevProjectsPage() {
         <div className="grid gap-5 md:grid-cols-2">
           {projects.map((project, index) => (
             <Reveal delay={0.06 + index * 0.03} key={project.id}>
-              <Link href={`/dev-projects/${project.slug}`} className="block card border-black/10 dark:border-white/10">
-                <div className="relative w-full aspect-video rounded overflow-hidden border border-black/10 dark:border-white/10 pointer-events-none">
-                  <iframe
-                    src={project.link}
-                    title={project.title}
-                    className="w-full h-full"
-                    loading="lazy"
-                    sandbox="allow-scripts allow-same-origin"
-                  />
+              <Link href={`/dev-projects/${project.slug}`} className="block card border-black/10 dark:border-white/10 hover:border-orange-500 transition">
+                <div className="relative w-full aspect-video rounded overflow-hidden border border-black/10 dark:border-white/10 bg-foreground/5">
+                  {project.imageUrl ? (
+                    <Image
+                      src={project.imageUrl}
+                      alt={project.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-500/10 to-orange-500/5">
+                      <span className="text-5xl font-bold text-orange-500/40 select-none uppercase">
+                        {project.title.charAt(0)}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <h2 className="mt-4 text-xl font-medium">{project.title}</h2>

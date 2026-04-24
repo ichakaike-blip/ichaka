@@ -40,7 +40,7 @@ export async function PATCH(
 
   try {
     const body = await req.json();
-    const { title, slug, description, link, order, published } = body;
+    const { title, slug, description, link, imageUrl, order, published } = body;
     const { id } = await params;
 
     const project = await prisma.devProject.update({
@@ -50,6 +50,7 @@ export async function PATCH(
         ...(slug !== undefined && { slug }),
         ...(description !== undefined && { description }),
         ...(link !== undefined && { link }),
+        ...(imageUrl !== undefined && { imageUrl: imageUrl || null }),
         ...(order !== undefined && { order: Number(order) }),
         ...(published !== undefined && { published: Boolean(published) }),
       },
