@@ -149,6 +149,12 @@ export default function SubmitPage() {
     });
   }
 
+  function onInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+    }
+  }
+
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
@@ -210,7 +216,7 @@ export default function SubmitPage() {
             <form onSubmit={onSubmit} className="space-y-5">
               <div className="space-y-2">
                 <label htmlFor="name" className="text-sm text-foreground/80">Name</label>
-                <input id="name" required value={form.name} onChange={(e) => onChange("name", e.target.value)} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
+                <input id="name" required value={form.name} onChange={(e) => onChange("name", e.target.value)} onKeyDown={onInputKeyDown} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
               </div>
 
               <div className="space-y-2">
@@ -221,6 +227,7 @@ export default function SubmitPage() {
                   required
                   value={form.email}
                   onChange={(e) => onChange("email", e.target.value)}
+                  onKeyDown={onInputKeyDown}
                   className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400"
                 />
               </div>
@@ -242,31 +249,31 @@ export default function SubmitPage() {
 
               <div className="space-y-2">
                 <label htmlFor="avatarUrl" className="text-sm text-foreground/80">Avatar image URL (optional)</label>
-                <input id="avatarUrl" value={form.avatarUrl} onChange={(e) => onChange("avatarUrl", e.target.value)} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
+                <input id="avatarUrl" value={form.avatarUrl} onChange={(e) => onChange("avatarUrl", e.target.value)} onKeyDown={onInputKeyDown} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <label htmlFor="twitter" className="text-sm text-foreground/80">X (optional)</label>
-                  <input id="twitter" placeholder="https://x.com/yourhandle" value={form.twitter} onChange={(e) => onChange("twitter", e.target.value)} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
+                  <input id="twitter" placeholder="https://x.com/yourhandle" value={form.twitter} onChange={(e) => onChange("twitter", e.target.value)} onKeyDown={onInputKeyDown} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="linkedin" className="text-sm text-foreground/80">LinkedIn (optional)</label>
-                  <input id="linkedin" value={form.linkedin} onChange={(e) => onChange("linkedin", e.target.value)} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
+                  <input id="linkedin" value={form.linkedin} onChange={(e) => onChange("linkedin", e.target.value)} onKeyDown={onInputKeyDown} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="substack" className="text-sm text-foreground/80">Substack (optional)</label>
-                  <input id="substack" value={form.substack} onChange={(e) => onChange("substack", e.target.value)} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
+                  <input id="substack" value={form.substack} onChange={(e) => onChange("substack", e.target.value)} onKeyDown={onInputKeyDown} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="website" className="text-sm text-foreground/80">Website (optional)</label>
-                  <input id="website" value={form.website} onChange={(e) => onChange("website", e.target.value)} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
+                  <input id="website" value={form.website} onChange={(e) => onChange("website", e.target.value)} onKeyDown={onInputKeyDown} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="postTitle" className="text-sm text-foreground/80">Post title</label>
-                <input id="postTitle" required value={form.postTitle} onChange={(e) => onChange("postTitle", e.target.value)} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
+                <input id="postTitle" required value={form.postTitle} onChange={(e) => onChange("postTitle", e.target.value)} onKeyDown={onInputKeyDown} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
               </div>
 
               <div className="space-y-2">
@@ -276,7 +283,7 @@ export default function SubmitPage() {
 
               <div className="space-y-2">
                 <label htmlFor="coverImage" className="text-sm text-foreground/80">Cover image URL (optional)</label>
-                <input id="coverImage" value={form.coverImage} onChange={(e) => onChange("coverImage", e.target.value)} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
+                <input id="coverImage" value={form.coverImage} onChange={(e) => onChange("coverImage", e.target.value)} onKeyDown={onInputKeyDown} className="w-full rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none focus:border-cyan-400" />
               </div>
 
               <div className="space-y-1">
