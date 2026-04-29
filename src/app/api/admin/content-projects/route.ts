@@ -1,6 +1,7 @@
 import { auth, hasAdminAccess } from "@/lib/auth";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -52,6 +53,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    revalidatePath("/content-projects", "layout");
+    revalidatePath("/skills/content");
     return NextResponse.json(project, { status: 201 });
   } catch (error: unknown) {
     console.error("Error creating content project:", error);

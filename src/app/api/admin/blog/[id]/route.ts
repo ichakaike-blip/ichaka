@@ -1,6 +1,7 @@
 import { auth, hasAdminAccess } from "@/lib/auth";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -59,6 +60,7 @@ export async function PATCH(
       },
     });
 
+    revalidatePath("/blog", "layout");
     return NextResponse.json(post);
   } catch (error: unknown) {
     console.error("Error updating post:", error);
@@ -99,6 +101,7 @@ export async function DELETE(
       where: { id },
     });
 
+    revalidatePath("/blog", "layout");
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     console.error("Error deleting post:", error);

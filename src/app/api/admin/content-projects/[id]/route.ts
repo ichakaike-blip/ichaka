@@ -1,6 +1,7 @@
 import { auth, hasAdminAccess } from "@/lib/auth";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -56,6 +57,8 @@ export async function PATCH(
       },
     });
 
+    revalidatePath("/content-projects", "layout");
+    revalidatePath("/skills/content");
     return NextResponse.json(project);
   } catch (error: unknown) {
     console.error("Error updating content project:", error);
@@ -86,6 +89,8 @@ export async function DELETE(
     const { id } = await params;
     await prisma.contentProject.delete({ where: { id } });
 
+    revalidatePath("/content-projects", "layout");
+    revalidatePath("/skills/content");
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     console.error("Error deleting content project:", error);

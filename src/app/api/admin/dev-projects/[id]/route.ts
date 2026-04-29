@@ -1,6 +1,7 @@
 import { auth, hasAdminAccess } from "@/lib/auth";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -56,6 +57,8 @@ export async function PATCH(
       },
     });
 
+    revalidatePath("/dev-projects", "layout");
+    revalidatePath("/skills/development");
     return NextResponse.json(project);
   } catch (error: unknown) {
     console.error("Error updating development project:", error);
@@ -86,6 +89,8 @@ export async function DELETE(
     const { id } = await params;
     await prisma.devProject.delete({ where: { id } });
 
+    revalidatePath("/dev-projects", "layout");
+    revalidatePath("/skills/development");
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     console.error("Error deleting development project:", error);
