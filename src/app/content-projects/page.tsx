@@ -4,6 +4,7 @@ import Image from "next/image";
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { Reveal } from "@/components/reveal";
+import { cloudinaryFetch, extractRawUrl } from "@/lib/cloudinary";
 
 export const revalidate = 3600;
 
@@ -54,10 +55,11 @@ export default async function ContentProjectsPage() {
                 className="block card border-black/10 transition hover:border-orange-500 dark:border-white/10"
               >
                 <Image
-                  src={project.imageUrl}
+                  src={cloudinaryFetch(extractRawUrl(project.imageUrl), { width: 1280 })}
                   alt={project.title}
                   width={640}
                   height={360}
+                  unoptimized={true}
                   className="w-full aspect-video object-cover rounded mb-4"
                 />
                 <h2 className="text-xl font-medium">{project.title}</h2>

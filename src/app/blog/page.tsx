@@ -5,6 +5,7 @@ import { unstable_cache } from "next/cache";
 import { Reveal } from "@/components/reveal";
 import { prisma } from "@/lib/prisma";
 import SubscribeForm from "@/components/SubscribeForm";
+import { cloudinaryFetch, extractRawUrl } from "@/lib/cloudinary";
 
 export const revalidate = 3600;
 
@@ -95,11 +96,12 @@ export default async function BlogPage() {
             >
               {post.coverImage && (
                 <Image
-                  src={post.coverImage}
+                  src={cloudinaryFetch(extractRawUrl(post.coverImage), { width: 1200 })}
                   alt={post.title}
                   width={768}
                   height={384}
                   sizes="(max-width: 768px) 100vw, 50vw"
+                  unoptimized={true}
                   className="mb-4 h-48 w-full rounded-t-lg object-cover"
                 />
               )}

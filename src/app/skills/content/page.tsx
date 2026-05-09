@@ -3,6 +3,7 @@ import Image from "next/image";
 import { unstable_cache } from "next/cache";
 import { Reveal } from "@/components/reveal";
 import { prisma } from "@/lib/prisma";
+import { cloudinaryFetch, extractRawUrl } from "@/lib/cloudinary";
 
 export const revalidate = 3600;
 
@@ -50,10 +51,11 @@ export default async function ContentSkillsPage() {
             >
               {item.imageUrl ? (
                 <Image
-                  src={item.imageUrl}
+                  src={cloudinaryFetch(extractRawUrl(item.imageUrl), { width: 1280 })}
                   alt={`${item.title} preview`}
                   width={640}
                   height={360}
+                  unoptimized={true}
                   className="mb-3 h-36 w-full rounded-lg border border-black/10 object-cover dark:border-white/10"
                 />
               ) : null}

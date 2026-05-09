@@ -6,6 +6,7 @@ import { marked } from "marked";
 import { prisma } from "@/lib/prisma";
 import { Reveal } from "@/components/reveal";
 import CommentSection from "@/components/CommentSection";
+import { cloudinaryFetch, extractRawUrl } from "@/lib/cloudinary";
 
 export const revalidate = 3600;
 
@@ -63,7 +64,7 @@ marked.use({
   extensions: [videoExtension],
   renderer: {
     image({ href, text }: { href: string, text: string }) {
-      return `<img class="rounded-lg w-full my-6 border border-foreground/10" alt="${text}" src="${href}" loading="lazy" />`;
+      return `<img class="rounded-lg w-full my-6 border border-foreground/10" alt="${text}" src="${extractRawUrl(href)}" loading="lazy" />`;
     }
   }
 });
@@ -216,10 +217,11 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
         <div className="bg-foreground/5 border border-foreground/10 rounded-xl p-6 mt-12 flex gap-4 items-start">
           {post.writer.avatar ? (
             <Image
-              src={post.writer.avatar}
+              src={cloudinaryFetch(extractRawUrl(post.writer.avatar), { width: 112, height: 112 })}
               alt={`${post.writer.name} avatar`}
               width={56}
               height={56}
+              unoptimized={true}
               className="w-14 h-14 rounded-full object-cover shrink-0"
             />
           ) : null}

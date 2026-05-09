@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { cloudinaryFetch, extractRawUrl } from "@/lib/cloudinary";
 
 interface ProjectPreviewProps {
   src: string;
@@ -43,7 +44,7 @@ export function ProjectPreview({ src, title, imageUrl }: ProjectPreviewProps) {
           {imageUrl ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
-              src={imageUrl}
+              src={cloudinaryFetch(extractRawUrl(imageUrl), { width: 1600 })}
               alt={title}
               className="absolute inset-0 object-cover w-full h-full opacity-40"
             />
