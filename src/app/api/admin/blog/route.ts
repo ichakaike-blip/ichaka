@@ -57,8 +57,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    revalidateTag("all-posts");
-    revalidateTag(`post-${post.slug}`);
+    revalidateTag("all-posts", {});
+    revalidateTag(`post-${post.slug}`, {});
     revalidatePath("/blog", "layout");
     return NextResponse.json(post, { status: 201 });
   } catch (error: unknown) {

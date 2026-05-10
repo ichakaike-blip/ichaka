@@ -60,9 +60,9 @@ export async function PATCH(
       },
     });
 
-    revalidateTag("all-posts");
+    revalidateTag("all-posts", {});
     if (post.slug) {
-      revalidateTag(`post-${post.slug}`);
+      revalidateTag(`post-${post.slug}`, {});
     }
     revalidatePath("/blog", "layout");
     return NextResponse.json(post);
@@ -105,9 +105,9 @@ export async function DELETE(
       where: { id },
     });
 
-    revalidateTag("all-posts");
+    revalidateTag("all-posts", {});
     if (post.slug) {
-      revalidateTag(`post-${post.slug}`);
+      revalidateTag(`post-${post.slug}`, {});
     }
     revalidatePath("/blog", "layout");
     return NextResponse.json({ success: true });
