@@ -1,7 +1,7 @@
 import { auth, hasAdminAccess } from "@/lib/auth";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -60,6 +60,10 @@ export async function PATCH(
       },
     });
 
+    revalidateTag("all-posts");
+    if (post.slug) {
+      revalidateTag(`post-${post.slug}`);
+    }
     revalidatePath("/blog", "layout");
     return NextResponse.json(post);
   } catch (error: unknown) {
@@ -97,10 +101,14 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    await prisma.blogPost.delete({
+    const post = await prisma.blogPost.delete({
       where: { id },
     });
 
+    revalidateTag("all-posts");
+    if (post.slug) {
+      revalidateTag(`post-${post.slug}`);
+    }
     revalidatePath("/blog", "layout");
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

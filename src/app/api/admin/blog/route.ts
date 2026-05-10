@@ -1,7 +1,7 @@
 import { auth, hasAdminAccess } from "@/lib/auth";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET all blog posts (admin only)
@@ -57,6 +57,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    revalidateTag("all-posts");
+    revalidateTag(`post-${post.slug}`);
     revalidatePath("/blog", "layout");
     return NextResponse.json(post, { status: 201 });
   } catch (error: unknown) {
